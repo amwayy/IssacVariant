@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, ISkillCaster
 {
     [SerializeField] private float playerMoveSpeed;
     [SerializeField] private float playerHeight;
     [SerializeField] private float playerWidth;
+    [SerializeField] private float damageVisualRadius;
     [SerializeField] private int initialActionPointMaxCount = 3;
     [SerializeField] private int hpMaxAmount = 500;
+    [SerializeField] private int defaultEquippedSkillCountMax = 4;
+    [SerializeField] private Vector3 attackPosBias;
+    [SerializeField] private Transform damageVisualPrefab;
+    [SerializeField] private Transform equippedSkillsTransform;
+    [SerializeField] private Vector3 damageVisualCenter;
 
     public static Player Instance { get; private set; }
 
@@ -38,14 +44,18 @@ public class Player : MonoBehaviour
     private bool isWalking;
     private bool isAttacking;
     private bool isEndingAttack;
+    private bool isCastingSkill;
     private Orientation orientation = Orientation.Front;
     private float attackSpeed;
     private int attackCount = 0;
-    private int attackDamage;
+    private int attackDamageMin;
+    private int attackDamageMax;
     private int actionPointMaxCount;
     private int availableActionPointCount;
     private int hpAmount;
+    private int equippedSkillCountMax;
     private Enemy battlingEnemy;
+    private List<Skill> equippedSkillList = new List<Skill>();
 
     private void Awake()
     {
@@ -57,11 +67,14 @@ public class Player : MonoBehaviour
         availableActionPointCount = actionPointMaxCount;
         hpAmount = hpMaxAmount;
         attackSpeed = DEFAULT_ATTACK_SPEED;
+        equippedSkillCountMax = defaultEquippedSkillCountMax;
     }
 
     private void Start()
     {
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
+
+        InitializeSkill();
     }
 
     private void Update()
@@ -76,6 +89,27 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public List<Skill> GetEquippedSkillList()
+    {
+        return equippedSkillList;
+    }
+
+    private void InitializeSkill()
+    {
+        List<Skill> allSkillList = SkillManager.Instance.getAllSkillList();
+        for (int i = 0; i < equippedSkillCountMax; i++)
+        {
+            Skill randomSkill = allSkillList[UnityEngine.Random.Range(0, allSkillList.Count)];
+            Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+            equippedSkillList.Add(skill);
+        }
+    }
+
+    public void EndTurn()
+    {
+        OnTurnEnd?.Invoke(this, EventArgs.Empty);
     }
 
     private void TurnManager_OnEnterPlayerTurn(object sender, EventArgs e)
@@ -97,6 +131,13 @@ public class Player : MonoBehaviour
     {
         hpAmount -= damage;
         hpAmount = Math.Max(0, hpAmount);
+
+        Transform damageVisualTransform = Instantiate(damageVisualPrefab, transform);
+        damageVisualTransform.GetComponent<DamageVisualUI>().SetDamage(damage);
+        int randomAngle = UnityEngine.Random.Range(0, 180);
+        float randomRadian = (float)Math.PI / 180f * randomAngle;
+        damageVisualTransform.localPosition = new Vector3(damageVisualCenter.x + damageVisualRadius * (float)Math.Cos(randomRadian),
+            damageVisualCenter.y + damageVisualRadius * (float)Math.Sin(randomRadian), 0);
 
         OnTakeDamage?.Invoke(this, damage);
 
@@ -123,9 +164,9 @@ public class Player : MonoBehaviour
         OnCastSkill?.Invoke(this, EventArgs.Empty);
     }
 
-    public bool IsInAttack()
+    public bool IsCastingSkill()
     {
-        return isAttacking || isEndingAttack;
+        return isCastingSkill;
     }
 
     public Enemy GetBattlingEnemy()
@@ -133,10 +174,12 @@ public class Player : MonoBehaviour
         return battlingEnemy;
     }
 
-    public void SetAttack(int damage, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
+    public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
     {
         isAttacking = true;
-        attackDamage = damage;
+        isCastingSkill = true;
+        attackDamageMin = damageMin;
+        attackDamageMax = damageMax;
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
     }
@@ -152,6 +195,7 @@ public class Player : MonoBehaviour
                 isAttacking = false;
                 isEndingAttack = true;
 
+                int attackDamage = UnityEngine.Random.Range(attackDamageMin, attackDamageMax + 1);
                 battlingEnemy.TakeDamage(attackDamage);
 
                 if (battlingEnemy.GetHPAmount() == 0)
@@ -173,9 +217,13 @@ public class Player : MonoBehaviour
                 if (attackCount > 0)
                 {
                     isAttacking = true;
-                } else if (availableActionPointCount == 0)
+                } else
                 {
-                    OnTurnEnd?.Invoke(this, EventArgs.Empty);
+                    isCastingSkill = false;
+                    if (availableActionPointCount == 0)
+                    {
+                        OnTurnEnd?.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
         }
@@ -262,10 +310,15 @@ public class Player : MonoBehaviour
         {
             OnEnterBattle?.Invoke(this, enemy);
             battlePosition = RoomManager.Instance.GetCurRoom().GetPlayerBattlePos();
-            enemyBattlePosition = RoomManager.Instance.GetCurRoom().GetEnemyBattlePos();
+            enemyBattlePosition = RoomManager.Instance.GetCurRoom().GetEnemyBattlePos() + attackPosBias;
             orientation = Orientation.Back;
 
             battlingEnemy = enemy;
         }
+    }
+
+    public bool IsPlayer()
+    {
+        return true;
     }
 }

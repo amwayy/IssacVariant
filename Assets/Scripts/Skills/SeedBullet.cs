@@ -1,34 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class SeedBullet : MonoBehaviour
+public class SeedBullet : Skill
 {
-    [SerializeField] private int actionPointExpense = 1;
-    [SerializeField] private int singleDamage = 20;
+    [SerializeField] private int thisActionPointExpense = 1;
+    [SerializeField] private int singleDamageMin = 15;
+    [SerializeField] private int singleDamageMax = 25;
     [SerializeField] private int minAttackCount = 2;
     [SerializeField] private int maxAttackCount = 4;
     [SerializeField] private float attackSpeed = 20f;
 
-    private Button skillButton;
-
     private void Awake()
     {
-        skillButton = GetComponent<Button>();
-
-        skillButton.onClick.AddListener(CastSkill);
+        skillName = "Seed Bullet";
+        actionPointExpense = thisActionPointExpense;
     }
 
-    private void CastSkill()
+    public override void CastSkill(ISkillCaster skillCaster)
     {
-        if (Player.Instance.IsInAttack()) return;
-
-        if (Player.Instance.GetAvailableActionPointCount() < actionPointExpense) return;
+        base.CastSkill(skillCaster);
 
         int randomAttckCount = Random.Range(minAttackCount, maxAttackCount + 1);
-        Player.Instance.SetAttack(singleDamage, attackSpeed, randomAttckCount);
 
-        Player.Instance.CastSkill(actionPointExpense);
+        skillCaster.SetAttack(singleDamageMin, singleDamageMax, attackSpeed, randomAttckCount);
+
+        if (skillCaster.IsPlayer())
+        {
+            Player.Instance.CastSkill(actionPointExpense);
+        }
     }
 }

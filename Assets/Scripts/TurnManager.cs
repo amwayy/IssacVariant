@@ -28,6 +28,11 @@ public class TurnManager : MonoBehaviour
         Player.Instance.OnTurnEnd += Player_OnTurnEnd;
     }
 
+    public Turn GetTurnState()
+    {
+        return turn;
+    }
+
     public void EndEnemyTurn()
     {
         turn = Turn.Player;

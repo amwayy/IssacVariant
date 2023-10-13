@@ -20,9 +20,17 @@ public class EnemySpawner : MonoBehaviour
     {
         int spawnCount = Random.Range(2, 5);
 
+        List<Enemy> spawnableEnemyList = new List<Enemy>();
+
+        for (int i = 0; i < enemyList.Count; i++)
+        {
+            spawnableEnemyList.Add(enemyList[i]);
+        }
+
         for (int i = 0; i < spawnCount; i++)
         {
-            Enemy randomEnemy = enemyList[Random.Range(0, enemyList.Count)];
+            Enemy randomEnemy = spawnableEnemyList[Random.Range(0, spawnableEnemyList.Count)];
+            spawnableEnemyList.Remove(randomEnemy);
             Enemy enemy = Instantiate(randomEnemy, transform);
             enemy.transform.position = GetRandomPosAwayFromPlayer();
         }

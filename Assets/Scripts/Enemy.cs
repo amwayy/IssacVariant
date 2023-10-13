@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, ISkillCaster
 {
     [SerializeField] private float enemyMoveSpeed;
     [SerializeField] private float enemyChangeDirTimerMax;
     [SerializeField] private float enemyHeight;
     [SerializeField] private float enemyWidth;
-    [SerializeField] private float defaultAttackSpeed = 10f;
+    [SerializeField] private float damageVisualRadius;
     [SerializeField] private int hpMaxAmount;
-    [SerializeField] private int attackDamage = 40;
     [SerializeField] private int attackCount = 1;
+    [SerializeField] private int equippedSkillCountMax = 4;
+    [SerializeField] private Transform damageVisualPrefab;
+    [SerializeField] private Transform equippedSkillsTransform;
+    [SerializeField] private Vector3 damageVisualCenter;
+    [SerializeField] private Vector3 attackPosBias;
 
     public event EventHandler<int> OnTakeDamage;
 
@@ -25,8 +29,8 @@ public class Enemy : MonoBehaviour
     }
 
     private const float ENTER_BATTLE_SPEED = 7f;
-    private const float DEFAULT_ATTACK_SPEED = 7f;
     private const float EPISILON_DISTANCE = .05f;
+    private const float DEFAULT_ATTACK_SPEED = 10f;
 
     private Rigidbody2D enemyRigidbody;
     private Vector3 moveDir = Vector3.zero;
@@ -39,6 +43,9 @@ public class Enemy : MonoBehaviour
     private bool isEndingAttack;
     private Orientation orientation;
     private int hpAmount;
+    private int attackDamageMin;
+    private int attackDamageMax;
+    private List<Skill> equippedSkillList = new List<Skill>();
 
     private void Awake()
     {
@@ -48,13 +55,15 @@ public class Enemy : MonoBehaviour
         enemyRigidbody = GetComponent<Rigidbody2D>();
 
         hpAmount = hpMaxAmount;
-        attackSpeed = defaultAttackSpeed;
+        attackSpeed = DEFAULT_ATTACK_SPEED;
     }
 
     private void Start()
     {
         Player.Instance.OnEnterBattle += Player_OnEnterBattle;
         TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
+
+        InitializeSkill();
     }
 
     private void Update()
@@ -71,19 +80,38 @@ public class Enemy : MonoBehaviour
         HandleMovement();
     }
 
+    private void InitializeSkill()
+    {
+        List<Skill> allSkillList = SkillManager.Instance.getAllSkillList();
+        for (int i = 0; i < equippedSkillCountMax; i++)
+        {
+            Skill randomSkill = allSkillList[UnityEngine.Random.Range(0, allSkillList.Count)];
+            Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+            equippedSkillList.Add(skill);
+        }
+    }
+
+    public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
+    {
+        isAttacking = true;
+        attackDamageMin = damageMin;
+        attackDamageMax = damageMax;
+        attackSpeed = playerAttackSpeed;
+        this.attackCount = attackCount;
+    }
+
     private void TryAttack()
     {
         if (isAttacking)
         {
             transform.position = Vector3.Lerp(transform.position, playerBattlePosition, Time.deltaTime * attackSpeed);
 
-            //Debug.Log(Vector3.Distance(transform.position, playerBattlePosition));
-
             if (Vector3.Distance(transform.position, playerBattlePosition) < EPISILON_DISTANCE)
             {
                 isAttacking = false;
                 isEndingAttack = true;
 
+                int attackDamage = UnityEngine.Random.Range(attackDamageMin, attackDamageMax + 1);
                 Player.Instance.TakeDamage(attackDamage);
 
                 if (Player.Instance.GetHPAmount() == 0)
@@ -114,7 +142,7 @@ public class Enemy : MonoBehaviour
 
     private void TurnManager_OnEnterEnemyTurn(object sender, EventArgs e)
     {
-        isAttacking = true;
+        equippedSkillList[UnityEngine.Random.Range(0, equippedSkillList.Count)].CastSkill(this);
     }
 
     public int GetHPAmount()
@@ -131,6 +159,13 @@ public class Enemy : MonoBehaviour
     {
         hpAmount -= damage;
         hpAmount = Math.Max(0, hpAmount);
+
+        Transform damageVisualTransform = Instantiate(damageVisualPrefab, transform);
+        damageVisualTransform.GetComponent<DamageVisualUI>().SetDamage(damage);
+        int randomAngle = UnityEngine.Random.Range(0, 180);
+        float randomRadian = (float) Math.PI / 180f * randomAngle;
+        damageVisualTransform.localPosition = new Vector3(damageVisualCenter.x + damageVisualRadius * (float) Math.Cos(randomRadian), 
+            damageVisualCenter.y + damageVisualRadius * (float) Math.Sin(randomRadian), 0);
 
         OnTakeDamage?.Invoke(this, damage);
 
@@ -152,7 +187,7 @@ public class Enemy : MonoBehaviour
             battlePosition = RoomManager.Instance.GetCurRoom().GetEnemyBattlePos();
             orientation = Orientation.Front;
 
-            playerBattlePosition = RoomManager.Instance.GetCurRoom().GetPlayerBattlePos();
+            playerBattlePosition = RoomManager.Instance.GetCurRoom().GetPlayerBattlePos() + attackPosBias;
         }
         else
         {
@@ -251,5 +286,10 @@ public class Enemy : MonoBehaviour
         moveDir.Normalize();
 
         enemyChangeDirTimer = enemyChangeDirTimerMax;
+    }
+
+    public bool IsPlayer()
+    {
+        return false;
     }
 }

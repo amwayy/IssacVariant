@@ -480,8 +480,14 @@ MonoBehaviour:
   playerMoveSpeed: 7
   playerHeight: 1.32
   playerWidth: 0.58
+  damageVisualRadius: 1.1
   initialActionPointMaxCount: 3
   hpMaxAmount: 500
+  defaultEquippedSkillCountMax: 4
+  attackPosBias: {x: -0.32, y: -0.22, z: 0}
+  damageVisualPrefab: {fileID: 3359021273417886645, guid: ae3ab2d134dd9634bbaa7eadf61573e7, type: 3}
+  equippedSkillsTransform: {fileID: 678401256}
+  damageVisualCenter: {x: 1.2, y: -1, z: 0}
 --- !u!4 &321458003
 Transform:
   m_ObjectHideFlags: 0
@@ -495,6 +501,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 626876974}
+  - {fileID: 678401256}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -936,6 +943,84 @@ RectTransform:
   m_AnchoredPosition: {x: 24.9, y: 125}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &674528426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 674528428}
+  - component: {fileID: 674528427}
+  m_Layer: 0
+  m_Name: SkillManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &674528427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674528426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed473223229f3a49a53db1fa3501294, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allSkillList:
+  - {fileID: 8716035238811695147, guid: 55d886417beb73449a208f9575a5020f, type: 3}
+  - {fileID: 2452906129087716086, guid: 4c61cdfd4ba755a4a81b4f1c73ef1cb0, type: 3}
+--- !u!4 &674528428
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674528426}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &678401255
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 678401256}
+  m_Layer: 0
+  m_Name: EquippedSkills
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &678401256
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 678401255}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 321458003}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &760865873
 GameObject:
   m_ObjectHideFlags: 0
@@ -1930,6 +2015,8 @@ MonoBehaviour:
   - {fileID: 8529936047952932437, guid: 24e4a3a004c4b1b4a8174276cba9bbe4, type: 3}
   - {fileID: 8715037843084045481, guid: d34516e3283bf25429805d8fb233c87e, type: 3}
   - {fileID: 8855940771053508222, guid: b789d157898d025489167c7a976f5057, type: 3}
+  - {fileID: 8901384080860984150, guid: 998b4a7fb27f65141a7291423f633b47, type: 3}
+  - {fileID: 4706664184402661013, guid: 818b6a93906e24b4eafa945e4d7262e2, type: 3}
   spawnPosXMax: 7.5
   spawnPosXMin: -7.5
   spawnPosYMax: 1.6
@@ -1989,6 +2076,10 @@ PrefabInstance:
     - target: {fileID: 5628018141983903106, guid: ef67ba864d1ecc042b5f4cf48455c0a6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5628018141983903107, guid: ef67ba864d1ecc042b5f4cf48455c0a6, type: 3}
+      propertyPath: m_SortingOrder
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5628018141983903116, guid: ef67ba864d1ecc042b5f4cf48455c0a6, type: 3}
