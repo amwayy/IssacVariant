@@ -1,0 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemySpawner : MonoBehaviour
+{
+    [SerializeField] private List<Enemy> enemyList;
+    [SerializeField] private float spawnPosXMax = 7.5f;
+    [SerializeField] private float spawnPosXMin = -7.5f;
+    [SerializeField] private float spawnPosYMax = 1.6f;
+    [SerializeField] private float spawnPosYMin = -4.8f;
+    [SerializeField] private float distanceAwayFromPlayer = 2.4f;
+
+    private void Awake()
+    {
+        SpawnEnemies();
+    }
+
+    private void SpawnEnemies()
+    {
+        int spawnCount = Random.Range(2, 5);
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            Enemy randomEnemy = enemyList[Random.Range(0, enemyList.Count)];
+            Enemy enemy = Instantiate(randomEnemy, transform);
+            enemy.transform.position = GetRandomPosAwayFromPlayer();
+        }
+    }
+
+    private Vector3 GetRandomPosAwayFromPlayer()
+    {
+        Vector3 posAwayFromPlayer = Vector3.zero;
+        float randomPosX, randomPosY = 0;
+        System.Random random = new System.Random();
+        if (Random.Range(0, 2) == 0)
+        {
+            randomPosX = (float) random.NextDouble() * (-distanceAwayFromPlayer - spawnPosXMin) + spawnPosXMin;
+            randomPosY = (float) random.NextDouble() * (-distanceAwayFromPlayer - spawnPosYMin) + spawnPosYMin;
+        } else
+        {
+            randomPosX = (float) random.NextDouble() * (spawnPosXMax - distanceAwayFromPlayer) + distanceAwayFromPlayer;
+            randomPosY = (float)random.NextDouble() * (spawnPosYMax - distanceAwayFromPlayer) + distanceAwayFromPlayer;
+        }
+        posAwayFromPlayer.x = randomPosX;
+        posAwayFromPlayer.y = randomPosY;
+        return posAwayFromPlayer;
+    }
+}
