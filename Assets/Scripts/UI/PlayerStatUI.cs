@@ -17,9 +17,15 @@ public class PlayerStatUI : MonoBehaviour
     {
         Player.Instance.OnCastSkill += Player_OnCastSkill;
         Player.Instance.OnTakeDamage += Player_OnTakeDamage;
+        Player.Instance.OnHeal += Player_OnHeal;
         Player.Instance.OnEnterBattle += Player_OnEnterBattle;
         Player.Instance.OnQuitBattle += Player_OnQuitBattle;
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
+    }
+
+    private void Player_OnHeal(object sender, System.EventArgs e)
+    {
+        UpdateHPBarVisual();
     }
 
     private void Player_OnQuitBattle(object sender, System.EventArgs e)
@@ -42,6 +48,11 @@ public class PlayerStatUI : MonoBehaviour
     }
 
     private void Player_OnTakeDamage(object sender, int e)
+    {
+        UpdateHPBarVisual();
+    }
+
+    private void UpdateHPBarVisual()
     {
         float hpPercentage = ((float)Player.Instance.GetHPAmount()) / Player.Instance.GetHPMaxAmount();
         hpBarImage.fillAmount = hpPercentage;

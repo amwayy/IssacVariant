@@ -10,6 +10,7 @@ public class SeedBullet : Skill
     [SerializeField] private int minAttackCount = 2;
     [SerializeField] private int maxAttackCount = 4;
     [SerializeField] private float attackSpeed = 20f;
+    [SerializeField] private float singleCastTime = 1f;
 
     private void Awake()
     {
@@ -19,15 +20,11 @@ public class SeedBullet : Skill
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
+        int randomAttckCount = Random.Range(minAttackCount, maxAttackCount + 1);
+        castTime = singleCastTime * randomAttckCount;
+
         base.CastSkill(skillCaster);
 
-        int randomAttckCount = Random.Range(minAttackCount, maxAttackCount + 1);
-
         skillCaster.SetAttack(singleDamageMin, singleDamageMax, attackSpeed, randomAttckCount);
-
-        if (skillCaster.IsPlayer())
-        {
-            Player.Instance.CastSkill(actionPointExpense);
-        }
     }
 }

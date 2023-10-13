@@ -6,6 +6,7 @@ public class Skill : MonoBehaviour
 {
     protected string skillName;
     protected int actionPointExpense;
+    protected float castTime;   // 技能释放的动画时间（秒）
 
     virtual public string GetSkillName ()
     {
@@ -16,9 +17,11 @@ public class Skill : MonoBehaviour
     {
         if (skillCaster.IsPlayer())
         {
-            if (Player.Instance.IsCastingSkill()) return;
-
             if (Player.Instance.GetAvailableActionPointCount() < actionPointExpense) return;
+
+            Player.Instance.UseActionPoints(actionPointExpense);
         }
+
+        skillCaster.SetCastSkill(castTime);
      }
 }

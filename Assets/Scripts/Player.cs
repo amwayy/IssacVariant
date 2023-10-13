@@ -8,14 +8,11 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private float playerMoveSpeed;
     [SerializeField] private float playerHeight;
     [SerializeField] private float playerWidth;
-    [SerializeField] private float damageVisualRadius;
     [SerializeField] private int initialActionPointMaxCount = 3;
     [SerializeField] private int hpMaxAmount = 500;
     [SerializeField] private int defaultEquippedSkillCountMax = 4;
     [SerializeField] private Vector3 attackPosBias;
-    [SerializeField] private Transform damageVisualPrefab;
     [SerializeField] private Transform equippedSkillsTransform;
-    [SerializeField] private Vector3 damageVisualCenter;
 
     public static Player Instance { get; private set; }
 
@@ -24,6 +21,7 @@ public class Player : MonoBehaviour, ISkillCaster
     public event EventHandler OnCastSkill;
     public event EventHandler OnTurnEnd;
     public event EventHandler<int> OnTakeDamage;
+    public event EventHandler OnHeal;
 
     public enum Orientation
     {
@@ -47,6 +45,8 @@ public class Player : MonoBehaviour, ISkillCaster
     private bool isCastingSkill;
     private Orientation orientation = Orientation.Front;
     private float attackSpeed;
+    private float castSkillTimer;
+    private float skillCastTime;
     private int attackCount = 0;
     private int attackDamageMin;
     private int attackDamageMax;
@@ -84,11 +84,33 @@ public class Player : MonoBehaviour, ISkillCaster
         TryMoveToBattlePosition();
 
         TryAttack();
+
+        HandleSkillCastTiming();
     }
 
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    private void HandleSkillCastTiming()
+    {
+        if (isCastingSkill)
+        {
+            castSkillTimer -= Time.deltaTime;
+            if (castSkillTimer <= 0f)
+            {
+                EndCastSkill();
+            }
+        }
+    }
+
+    public void Heal(int healAmount)
+    {
+        hpAmount += healAmount;
+        hpAmount = Math.Min(hpAmount, hpMaxAmount);
+
+        OnHeal?.Invoke(this, EventArgs.Empty);
     }
 
     public List<Skill> GetEquippedSkillList()
@@ -132,13 +154,6 @@ public class Player : MonoBehaviour, ISkillCaster
         hpAmount -= damage;
         hpAmount = Math.Max(0, hpAmount);
 
-        Transform damageVisualTransform = Instantiate(damageVisualPrefab, transform);
-        damageVisualTransform.GetComponent<DamageVisualUI>().SetDamage(damage);
-        int randomAngle = UnityEngine.Random.Range(0, 180);
-        float randomRadian = (float)Math.PI / 180f * randomAngle;
-        damageVisualTransform.localPosition = new Vector3(damageVisualCenter.x + damageVisualRadius * (float)Math.Cos(randomRadian),
-            damageVisualCenter.y + damageVisualRadius * (float)Math.Sin(randomRadian), 0);
-
         OnTakeDamage?.Invoke(this, damage);
 
         if (hpAmount == 0)
@@ -157,11 +172,30 @@ public class Player : MonoBehaviour, ISkillCaster
         return availableActionPointCount;
     }
 
-    public void CastSkill(int actionPointExpense)
+    public void UseActionPoints(int actionPointExpense)
     {
         availableActionPointCount -= actionPointExpense;
+    }
+
+    public void SetCastSkill(float castTime)
+    {
+        isCastingSkill = true;
+        skillCastTime = castTime;
+        castSkillTimer = skillCastTime;
 
         OnCastSkill?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void EndCastSkill()
+    {
+        Debug.Log("Player End Cast");
+
+        isCastingSkill = false;
+
+        if (availableActionPointCount == 0)
+        {
+            OnTurnEnd?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public bool IsCastingSkill()
@@ -177,7 +211,6 @@ public class Player : MonoBehaviour, ISkillCaster
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
     {
         isAttacking = true;
-        isCastingSkill = true;
         attackDamageMin = damageMin;
         attackDamageMax = damageMax;
         attackSpeed = playerAttackSpeed;
@@ -217,13 +250,6 @@ public class Player : MonoBehaviour, ISkillCaster
                 if (attackCount > 0)
                 {
                     isAttacking = true;
-                } else
-                {
-                    isCastingSkill = false;
-                    if (availableActionPointCount == 0)
-                    {
-                        OnTurnEnd?.Invoke(this, EventArgs.Empty);
-                    }
                 }
             }
         }

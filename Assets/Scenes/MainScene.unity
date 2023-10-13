@@ -480,14 +480,11 @@ MonoBehaviour:
   playerMoveSpeed: 7
   playerHeight: 1.32
   playerWidth: 0.58
-  damageVisualRadius: 1.1
   initialActionPointMaxCount: 3
   hpMaxAmount: 500
   defaultEquippedSkillCountMax: 4
   attackPosBias: {x: -0.32, y: -0.22, z: 0}
-  damageVisualPrefab: {fileID: 3359021273417886645, guid: ae3ab2d134dd9634bbaa7eadf61573e7, type: 3}
   equippedSkillsTransform: {fileID: 678401256}
-  damageVisualCenter: {x: 1.2, y: -1, z: 0}
 --- !u!4 &321458003
 Transform:
   m_ObjectHideFlags: 0
@@ -828,6 +825,11 @@ MonoBehaviour:
   playerFrontVisual: {fileID: 21300000, guid: ec47f75fe8aff1644ac73998f4ad31b5, type: 3}
   playerBackVisual: {fileID: 21300002, guid: ec47f75fe8aff1644ac73998f4ad31b5, type: 3}
   playerSideVisual: {fileID: 21300004, guid: ec47f75fe8aff1644ac73998f4ad31b5, type: 3}
+  visualCenter: {x: 0, y: 0.6, z: 0}
+  damageVisualPrefab: {fileID: 3359021273417886645, guid: ae3ab2d134dd9634bbaa7eadf61573e7, type: 3}
+  statUpVisualPrefab: {fileID: 4082199017572654067, guid: e604635c00ff745409fae461ef74d0e3, type: 3}
+  visualRadius: 1
+  statChangeVisualCount: 5
 --- !u!1 &649037419
 GameObject:
   m_ObjectHideFlags: 0

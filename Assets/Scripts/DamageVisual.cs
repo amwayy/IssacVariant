@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class DamageVisualUI : MonoBehaviour
+public class DamageVisual : MonoBehaviour
 {
     [SerializeField] private float fullAlphaTimerMax;
     [SerializeField] private float showTimerMax;

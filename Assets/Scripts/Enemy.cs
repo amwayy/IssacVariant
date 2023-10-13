@@ -9,16 +9,14 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private float enemyChangeDirTimerMax;
     [SerializeField] private float enemyHeight;
     [SerializeField] private float enemyWidth;
-    [SerializeField] private float damageVisualRadius;
     [SerializeField] private int hpMaxAmount;
     [SerializeField] private int attackCount = 1;
     [SerializeField] private int equippedSkillCountMax = 4;
-    [SerializeField] private Transform damageVisualPrefab;
     [SerializeField] private Transform equippedSkillsTransform;
-    [SerializeField] private Vector3 damageVisualCenter;
     [SerializeField] private Vector3 attackPosBias;
 
     public event EventHandler<int> OnTakeDamage;
+    public event EventHandler OnHeal;
 
     public enum Orientation
     {
@@ -38,9 +36,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private Vector3 playerBattlePosition = Vector3.zero;
     private float enemyChangeDirTimer;
     private float attackSpeed;
+    private float castSkillTimer;
+    private float skillCastTime;
     private bool isWalking;
     private bool isAttacking;
     private bool isEndingAttack;
+    private bool isCastingSkill;
     private Orientation orientation;
     private int hpAmount;
     private int attackDamageMin;
@@ -73,11 +74,46 @@ public class Enemy : MonoBehaviour, ISkillCaster
         TryMoveToBattlePosition();
 
         TryAttack();
+
+        HandleSkillCastTiming();
+    }
+    private void HandleSkillCastTiming()
+    {
+        if (isCastingSkill)
+        {
+            castSkillTimer -= Time.deltaTime;
+            if (castSkillTimer <= 0f)
+            {
+                EndCastSkill();
+            }
+        }
     }
 
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public void SetCastSkill(float castTime)
+    {
+        isCastingSkill = true;
+        skillCastTime = castTime;
+        castSkillTimer = skillCastTime;
+    }
+
+    public void EndCastSkill()
+    {
+        Debug.Log("Enemy End Cast");
+        isCastingSkill = false;
+        EndTurn();
+    }
+
+    public void Heal(int healAmount)
+    {
+        hpAmount += healAmount;
+        hpAmount = Math.Min(hpAmount, hpMaxAmount);
+
+        OnHeal?.Invoke(this, EventArgs.Empty);
     }
 
     private void InitializeSkill()
@@ -134,15 +170,21 @@ public class Enemy : MonoBehaviour, ISkillCaster
                     isAttacking = true;
                 } else
                 {
-                    TurnManager.Instance.EndEnemyTurn();
+                    EndTurn();
                 }
             }
         }
     }
 
+    private void EndTurn()
+    {
+        TurnManager.Instance.EndEnemyTurn();
+    }
+
     private void TurnManager_OnEnterEnemyTurn(object sender, EventArgs e)
     {
-        equippedSkillList[UnityEngine.Random.Range(0, equippedSkillList.Count)].CastSkill(this);
+        int castedSkillIndex = UnityEngine.Random.Range(0, equippedSkillList.Count);
+        equippedSkillList[castedSkillIndex].CastSkill(this);
     }
 
     public int GetHPAmount()
@@ -159,13 +201,6 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         hpAmount -= damage;
         hpAmount = Math.Max(0, hpAmount);
-
-        Transform damageVisualTransform = Instantiate(damageVisualPrefab, transform);
-        damageVisualTransform.GetComponent<DamageVisualUI>().SetDamage(damage);
-        int randomAngle = UnityEngine.Random.Range(0, 180);
-        float randomRadian = (float) Math.PI / 180f * randomAngle;
-        damageVisualTransform.localPosition = new Vector3(damageVisualCenter.x + damageVisualRadius * (float) Math.Cos(randomRadian), 
-            damageVisualCenter.y + damageVisualRadius * (float) Math.Sin(randomRadian), 0);
 
         OnTakeDamage?.Invoke(this, damage);
 

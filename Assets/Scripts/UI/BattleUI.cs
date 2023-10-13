@@ -32,7 +32,7 @@ public class BattleUI : MonoBehaviour
 
     private void EndPlayerTurn()
     {
-        if (TurnManager.Instance.GetTurnState() == TurnManager.Turn.Player)
+        if (TurnManager.Instance.GetTurnState() == TurnManager.Turn.Player && !Player.Instance.IsCastingSkill())
         {
             Player.Instance.EndTurn();
         }

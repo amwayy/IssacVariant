@@ -29,6 +29,9 @@ public class SkillButton : MonoBehaviour
 
     private void CastSkill()
     {
+        if (Player.Instance.IsCastingSkill()) return;
+        if (TurnManager.Instance.GetTurnState() == TurnManager.Turn.Enemy) return;
+
         skill.CastSkill(Player.Instance);
     }
 }

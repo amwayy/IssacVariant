@@ -53,13 +53,10 @@ MonoBehaviour:
   enemyChangeDirTimerMax: 2
   enemyHeight: 1.7
   enemyWidth: 1
-  damageVisualRadius: 1.1
   hpMaxAmount: 300
   attackCount: 1
   equippedSkillCountMax: 4
-  damageVisualPrefab: {fileID: 3359021273417886645, guid: ae3ab2d134dd9634bbaa7eadf61573e7, type: 3}
   equippedSkillsTransform: {fileID: 5970935523014547462}
-  damageVisualCenter: {x: 1.2, y: -1, z: 0}
   attackPosBias: {x: 0.32, y: 0.22, z: 0}
 --- !u!61 &2151240641143420229
 BoxCollider2D:
@@ -601,6 +598,11 @@ MonoBehaviour:
   enmeySideVisual: {fileID: 21300004, guid: ec47f75fe8aff1644ac73998f4ad31b5, type: 3}
   hpUIGameObject: {fileID: 4467286864848999074}
   hpBarImage: {fileID: 8720028807187050295}
+  visualCenter: {x: 0, y: 0.6, z: 0}
+  damageVisualPrefab: {fileID: 3359021273417886645, guid: ae3ab2d134dd9634bbaa7eadf61573e7, type: 3}
+  statUpVisualPrefab: {fileID: 4082199017572654067, guid: e604635c00ff745409fae461ef74d0e3, type: 3}
+  visualRadius: 1
+  statChangeVisualCount: 5
 --- !u!4 &6034824983353457274 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5628018141983903106, guid: ef67ba864d1ecc042b5f4cf48455c0a6, type: 3}
