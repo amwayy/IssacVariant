@@ -5,8 +5,8 @@ using UnityEngine;
 public class SeedBullet : Skill
 {
     [SerializeField] private int thisActionPointExpense = 1;
-    [SerializeField] private int singleDamageMin = 15;
-    [SerializeField] private int singleDamageMax = 25;
+    [SerializeField] private int singleDamageMin = 25;
+    [SerializeField] private int singleDamageMax = 35;
     [SerializeField] private int minAttackCount = 2;
     [SerializeField] private int maxAttackCount = 4;
     [SerializeField] private float attackSpeed = 20f;

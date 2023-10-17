@@ -13,6 +13,7 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private int defaultEquippedSkillCountMax = 4;
     [SerializeField] private Vector3 attackPosBias;
     [SerializeField] private Transform equippedSkillsTransform;
+    [SerializeField] private Transform debuffsTransform;
 
     public static Player Instance { get; private set; }
 
@@ -31,7 +32,7 @@ public class Player : MonoBehaviour, ISkillCaster
         Right
     }
 
-    private const float ENTER_BATTLE_SPEED = 7f;
+    private const float ENTER_BATTLE_SPEED = 15f;
     private const float DEFAULT_ATTACK_SPEED = 15f;
     private const float EPISILON_DISTANCE = .05f;
 
@@ -92,6 +93,22 @@ public class Player : MonoBehaviour, ISkillCaster
     {
         HandleMovement();
     }
+    public Transform GetDebuffContainerTransform()
+    {
+        return debuffsTransform;
+    }
+
+    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
+    {
+        Transform debuffTransform = Instantiate(debuffPrefab, debuffsTransform);
+        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
+
+    }
+
+    public ISkillCaster GetOpponent()
+    {
+        return battlingEnemy;
+    }
 
     private void HandleSkillCastTiming()
     {
@@ -120,12 +137,10 @@ public class Player : MonoBehaviour, ISkillCaster
 
     private void InitializeSkill()
     {
-        List<Skill> allSkillList = SkillManager.Instance.getAllSkillList();
+        List<Skill> allSkillList = GameLibrary.Instance.getAllSkillList();
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
-            Skill randomSkill = allSkillList[UnityEngine.Random.Range(0, allSkillList.Count)];
-            Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
-            equippedSkillList.Add(skill);
+            equippedSkillList.Add(allSkillList[allSkillList.Count - 1 - i]);
         }
     }
 

@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private int attackCount = 1;
     [SerializeField] private int equippedSkillCountMax = 4;
     [SerializeField] private Transform equippedSkillsTransform;
+    [SerializeField] private Transform debuffsTransform;
     [SerializeField] private Vector3 attackPosBias;
 
     public event EventHandler<int> OnTakeDamage;
@@ -26,7 +27,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
         Right
     }
 
-    private const float ENTER_BATTLE_SPEED = 7f;
+    private const float ENTER_BATTLE_SPEED = 15f;
     private const float EPISILON_DISTANCE = .05f;
     private const float DEFAULT_ATTACK_SPEED = 10f;
 
@@ -38,15 +39,18 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private float attackSpeed;
     private float castSkillTimer;
     private float skillCastTime;
+    private float debuffMakeEffectTimer;
     private bool isWalking;
     private bool isAttacking;
     private bool isEndingAttack;
     private bool isCastingSkill;
+    private bool isDebuffMakingEffect;
     private Orientation orientation;
     private int hpAmount;
     private int attackDamageMin;
     private int attackDamageMax;
     private List<Skill> equippedSkillList = new List<Skill>();
+
 
     private void Awake()
     {
@@ -76,7 +80,34 @@ public class Enemy : MonoBehaviour, ISkillCaster
         TryAttack();
 
         HandleSkillCastTiming();
+
+        TryDebuffMakeEffect();
     }
+
+    private void FixedUpdate()
+    {
+        HandleMovement();
+    }
+
+    public Transform GetDebuffContainerTransform()
+    {
+        return debuffsTransform;
+    }
+
+    private void TryDebuffMakeEffect()
+    {
+        if (isDebuffMakingEffect)
+        {
+            debuffMakeEffectTimer -= Time.deltaTime;
+
+            if (debuffMakeEffectTimer <= 0f)
+            {
+                isDebuffMakingEffect = false;
+                CastSkill();
+            }
+        }
+    }
+
     private void HandleSkillCastTiming()
     {
         if (isCastingSkill)
@@ -89,14 +120,26 @@ public class Enemy : MonoBehaviour, ISkillCaster
         }
     }
 
-    private void FixedUpdate()
+    private void CastSkill()
     {
-        HandleMovement();
+        isCastingSkill = true;
+        int castedSkillIndex = UnityEngine.Random.Range(0, equippedSkillList.Count);
+        equippedSkillList[castedSkillIndex].CastSkill(this);
+    }
+
+    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
+    {
+        Transform debuffTransform = Instantiate(debuffPrefab, debuffsTransform);
+        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
+    }
+
+    public ISkillCaster GetOpponent()
+    {
+        return Player.Instance;
     }
 
     public void SetCastSkill(float castTime)
     {
-        isCastingSkill = true;
         skillCastTime = castTime;
         castSkillTimer = skillCastTime;
     }
@@ -118,7 +161,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void InitializeSkill()
     {
-        List<Skill> allSkillList = SkillManager.Instance.getAllSkillList();
+        List<Skill> allSkillList = GameLibrary.Instance.getAllSkillList();
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
             Skill randomSkill = allSkillList[UnityEngine.Random.Range(0, allSkillList.Count)];
@@ -168,9 +211,6 @@ public class Enemy : MonoBehaviour, ISkillCaster
                 if (attackCount > 0)
                 {
                     isAttacking = true;
-                } else
-                {
-                    EndTurn();
                 }
             }
         }
@@ -183,8 +223,15 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void TurnManager_OnEnterEnemyTurn(object sender, EventArgs e)
     {
-        int castedSkillIndex = UnityEngine.Random.Range(0, equippedSkillList.Count);
-        equippedSkillList[castedSkillIndex].CastSkill(this);
+        if (debuffsTransform.childCount != 0)
+        {
+            isDebuffMakingEffect = true;
+            debuffMakeEffectTimer = debuffsTransform.GetChild(0).GetComponent<Debuff>().GetDebuffMakeEffectTimerMax();
+        } else
+        {
+            isDebuffMakingEffect = false;
+            CastSkill();
+        }
     }
 
     public int GetHPAmount()
