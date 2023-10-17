@@ -45,6 +45,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private bool isEndingAttack;
     private bool isCastingSkill;
     private bool isDebuffMakingEffect;
+    private bool isImprisoned;
     private Orientation orientation;
     private int hpAmount;
     private int attackDamageMin;
@@ -103,7 +104,15 @@ public class Enemy : MonoBehaviour, ISkillCaster
             if (debuffMakeEffectTimer <= 0f)
             {
                 isDebuffMakingEffect = false;
-                CastSkill();
+
+                if (isImprisoned)
+                {
+                    EndTurn();
+                    isImprisoned = false;
+                } else if (TurnManager.Instance.GetTurnState() == TurnManager.Turn.Enemy)
+                {
+                    CastSkill();
+                }
             }
         }
     }
@@ -129,6 +138,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
     {
+        if (debuffsTransform.childCount != 0)
+        {
+            debuffsTransform.GetChild(0).GetComponent<Debuff>().DestroySelf();
+        }
+
         Transform debuffTransform = Instantiate(debuffPrefab, debuffsTransform);
         debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
     }
@@ -216,7 +230,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
         }
     }
 
-    private void EndTurn()
+    public void EndTurn()
     {
         TurnManager.Instance.EndEnemyTurn();
     }
@@ -227,6 +241,15 @@ public class Enemy : MonoBehaviour, ISkillCaster
         {
             isDebuffMakingEffect = true;
             debuffMakeEffectTimer = debuffsTransform.GetChild(0).GetComponent<Debuff>().GetDebuffMakeEffectTimerMax();
+
+            foreach (Transform debuffTransform in debuffsTransform)
+            {
+                if (debuffTransform.TryGetComponent(out Imprison imprison))
+                {
+                    isImprisoned = true;
+                    break;
+                }
+            }
         } else
         {
             isDebuffMakingEffect = false;

@@ -6,6 +6,8 @@ public interface ISkillCaster
 {
     private const float ENTER_BATTLE_SPEED = 15f;
 
+    public void EndTurn();
+
     public Transform GetDebuffContainerTransform();
 
     public void TakeDamage(int damage);

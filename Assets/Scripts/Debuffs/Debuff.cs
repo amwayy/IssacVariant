@@ -9,7 +9,7 @@ public class Debuff : MonoBehaviour
     [SerializeField] private GameObject iconGameObject;
     [SerializeField] private float debuffMakeEffectTimerMax = .5f;   // Debuff生效动画的时间
 
-    protected ISkillCaster skillCaster;
+    protected ISkillCaster debuffOwner;
 
     private float setDebuffTimer;
     private float setDebuffTimerMax;
@@ -18,7 +18,7 @@ public class Debuff : MonoBehaviour
 
     private void Start()
     {
-        if (skillCaster.IsPlayer())
+        if (debuffOwner.IsPlayer())
         {
             TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
         } else
@@ -69,7 +69,7 @@ public class Debuff : MonoBehaviour
     public void Initialize(ISkillCaster skillCaster, int countdown, float setDebuffTimerMax)
     {
         this.countdown = countdown;
-        this.skillCaster = skillCaster;
+        this.debuffOwner = skillCaster;
         countdownText.text = countdown.ToString();
         this.setDebuffTimerMax = setDebuffTimerMax;
         setDebuffTimer = setDebuffTimerMax;
@@ -97,10 +97,14 @@ public class Debuff : MonoBehaviour
         }
     }
 
-    public void DestroySelf()
+    private void OnDestroy()
     {
         TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
         TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
+    }
+
+    public void DestroySelf()
+    {
         transform.SetParent(null);
         Destroy(gameObject);
     }

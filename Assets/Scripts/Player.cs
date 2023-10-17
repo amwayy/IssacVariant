@@ -11,8 +11,8 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private int initialActionPointMaxCount = 3;
     [SerializeField] private int hpMaxAmount = 500;
     [SerializeField] private int defaultEquippedSkillCountMax = 4;
+    [SerializeField] private int defaultBackupSkillCountMax = 6;
     [SerializeField] private Vector3 attackPosBias;
-    [SerializeField] private Transform equippedSkillsTransform;
     [SerializeField] private Transform debuffsTransform;
 
     public static Player Instance { get; private set; }
@@ -44,10 +44,13 @@ public class Player : MonoBehaviour, ISkillCaster
     private bool isAttacking;
     private bool isEndingAttack;
     private bool isCastingSkill;
+    private bool isDebuffMakingEffect;
+    private bool isImprisoned;
     private Orientation orientation = Orientation.Front;
     private float attackSpeed;
     private float castSkillTimer;
     private float skillCastTime;
+    private float debuffMakeEffectTimer;
     private int attackCount = 0;
     private int attackDamageMin;
     private int attackDamageMax;
@@ -55,8 +58,10 @@ public class Player : MonoBehaviour, ISkillCaster
     private int availableActionPointCount;
     private int hpAmount;
     private int equippedSkillCountMax;
+    private int backupSkillCountMax;
     private Enemy battlingEnemy;
     private List<Skill> equippedSkillList = new List<Skill>();
+    private List<Skill> backUpSkillList = new List<Skill>();
 
     private void Awake()
     {
@@ -69,6 +74,7 @@ public class Player : MonoBehaviour, ISkillCaster
         hpAmount = hpMaxAmount;
         attackSpeed = DEFAULT_ATTACK_SPEED;
         equippedSkillCountMax = defaultEquippedSkillCountMax;
+        backupSkillCountMax = defaultBackupSkillCountMax;
     }
 
     private void Start()
@@ -87,12 +93,52 @@ public class Player : MonoBehaviour, ISkillCaster
         TryAttack();
 
         HandleSkillCastTiming();
+
+        TryDebuffMakeEffect();
     }
 
     private void FixedUpdate()
     {
         HandleMovement();
     }
+
+    public void ExchangeSkill(int equippedSkillIndex, int backupSkillIndex)
+    {
+        Skill equippedSkillToExchange = equippedSkillList[equippedSkillIndex];
+        Skill backupSkillToExchange = backUpSkillList[backupSkillIndex];
+        equippedSkillList[equippedSkillIndex] = backupSkillToExchange;
+        backUpSkillList[backupSkillIndex] = equippedSkillToExchange;
+    }
+
+    public List<Skill> GetBackupSkillList()
+    {
+        return backUpSkillList;
+    }
+
+    public bool IsDebuffMakingEffect()
+    {
+        return isDebuffMakingEffect;
+    }
+
+    private void TryDebuffMakeEffect()
+    {
+        if (isDebuffMakingEffect)
+        {
+            debuffMakeEffectTimer -= Time.deltaTime;
+
+            if (debuffMakeEffectTimer <= 0f)
+            {
+                isDebuffMakingEffect = false;
+
+                if (isImprisoned)
+                {
+                    EndTurn();
+                    isImprisoned = false;
+                }
+            }
+        }
+    }
+
     public Transform GetDebuffContainerTransform()
     {
         return debuffsTransform;
@@ -100,6 +146,11 @@ public class Player : MonoBehaviour, ISkillCaster
 
     public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
     {
+        if (debuffsTransform.childCount != 0)
+        {
+            debuffsTransform.GetChild(0).GetComponent<Debuff>().DestroySelf();
+        }
+
         Transform debuffTransform = Instantiate(debuffPrefab, debuffsTransform);
         debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
 
@@ -137,10 +188,19 @@ public class Player : MonoBehaviour, ISkillCaster
 
     private void InitializeSkill()
     {
+        // 初期开发设定
+
+        // player携带全部技能列表的后4个（方便测试最新技能）
         List<Skill> allSkillList = GameLibrary.Instance.getAllSkillList();
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
             equippedSkillList.Add(allSkillList[allSkillList.Count - 1 - i]);
+        }
+
+        // 剩下的技能加入背包
+        for (int i = 0; i < allSkillList.Count - equippedSkillCountMax; i++)
+        {
+            backUpSkillList.Add(allSkillList[i]);
         }
     }
 
@@ -152,6 +212,25 @@ public class Player : MonoBehaviour, ISkillCaster
     private void TurnManager_OnEnterPlayerTurn(object sender, EventArgs e)
     {
         availableActionPointCount = actionPointMaxCount;
+
+        if (debuffsTransform.childCount != 0)
+        {
+            isDebuffMakingEffect = true;
+            debuffMakeEffectTimer = debuffsTransform.GetChild(0).GetComponent<Debuff>().GetDebuffMakeEffectTimerMax();
+
+            foreach (Transform debuffTransform in debuffsTransform)
+            {
+                if (debuffTransform.TryGetComponent(out Imprison imprison))
+                {
+                    isImprisoned = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            isDebuffMakingEffect = false;
+        }
     }
 
     public int GetHPMaxAmount()

@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 6268011213581452381}
   - component: {fileID: 1271912593913072534}
   - component: {fileID: 8836542048853188006}
-  - component: {fileID: -3319108332653634704}
+  - component: {fileID: 5599822203495285948}
   m_Layer: 5
-  m_Name: SkillButton
+  m_Name: BackupSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.44705886, g: 0.45882356, b: 0.10196079, a: 1}
+  m_Color: {r: 0.10196078, g: 0.3842293, b: 0.45882353, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
---- !u!114 &-3319108332653634704
+--- !u!114 &5599822203495285948
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,10 +164,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5002441140733149109}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbc53ea1bd1b03a41a94c080cd9b6e8c, type: 3}
+  m_Script: {fileID: 11500000, guid: e59884fc44241574183e04eec2a2d00f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   skillText: {fileID: 4985793287748382523}
+  enableColor: {r: 0.10588236, g: 0.37254903, b: 0.43921572, a: 1}
+  disableColor: {r: 0.043805618, g: 0.18155885, b: 0.21698111, a: 1}
 --- !u!1 &7649713861399549181
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,7 +271,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0

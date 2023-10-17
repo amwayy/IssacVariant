@@ -483,8 +483,8 @@ MonoBehaviour:
   initialActionPointMaxCount: 3
   hpMaxAmount: 500
   defaultEquippedSkillCountMax: 4
+  defaultBackupSkillCountMax: 6
   attackPosBias: {x: -0.32, y: -0.22, z: 0}
-  equippedSkillsTransform: {fileID: 678401256}
   debuffsTransform: {fileID: 1452940627}
 --- !u!4 &321458003
 Transform:
@@ -499,7 +499,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 626876974}
-  - {fileID: 678401256}
   - {fileID: 1127804742}
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -998,37 +997,6 @@ MonoBehaviour:
   - {fileID: 1135718138326576045, guid: 34c80483fcb9a2d4aa23fb47e402f713, type: 3}
   - {fileID: 4877976705816309324, guid: dd5aedd789c1b254ebb039442b5a6c78, type: 3}
   - {fileID: -1667779495118545519, guid: 14c9e18ca2527d74e888ee661ffa842d, type: 3}
---- !u!1 &678401255
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 678401256}
-  m_Layer: 0
-  m_Name: EquippedSkills
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &678401256
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 678401255}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 321458003}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &760865873
 GameObject:
   m_ObjectHideFlags: 0
@@ -1656,7 +1624,7 @@ RectTransform:
   m_Children:
   - {fileID: 1452940627}
   m_Father: {fileID: 321458003}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

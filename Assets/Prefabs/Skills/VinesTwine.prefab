@@ -44,3 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d090068ba70b81845b192ca8ad8b7510, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisActionPointExpense: 2
+  damageMin: 95
+  damageMax: 105
+  thisCastTime: 1
+  imprisonProbability: 0.2
+  setDebuffTimerMax: 0.5
+  imprisonDebuffPrefab: {fileID: 3930392331736949166, guid: f93f0d529536f0e449da609cce395f93, type: 3}

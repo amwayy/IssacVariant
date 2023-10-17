@@ -10,7 +10,7 @@ public class SharpLeaf : Skill
     [SerializeField] private int bleedCountdownMax = 4;
     [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float bleedProbability = .2f;
-    [SerializeField] private float setDebuffTimerMax = .5f;
+    [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform bleedDebuffPrefab;
 
     private void Awake()
@@ -47,6 +47,7 @@ public class SharpLeaf : Skill
                 break;
             }
         }
+
         if (isInBleed)
         {
             bleed.IncreaseCountdown(bleedCountdownMax);

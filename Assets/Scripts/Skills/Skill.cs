@@ -14,6 +14,11 @@ public class Skill : MonoBehaviour
         return skillName;
     }
 
+    public int GetActionPointExpense()
+    {
+        return actionPointExpense;
+    }
+
     virtual public void CastSkill(ISkillCaster skillCaster)
     {
         this.skillCaster = skillCaster;
