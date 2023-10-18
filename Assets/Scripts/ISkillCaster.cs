@@ -31,4 +31,6 @@ public interface ISkillCaster
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = ENTER_BATTLE_SPEED, int attackCount = 1);
 
     public void Heal(int healAmount);
+
+    public int GetHPAmount(); //wx¼Ó
 }
