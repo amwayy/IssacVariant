@@ -28,6 +28,9 @@ public interface ISkillCaster
 
     public bool IsPlayer();
 
+    // 连段攻击时，每次攻击后对攻击伤害进行修改
+    public void SetAttackModify(int modifyAmount);
+
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = ENTER_BATTLE_SPEED, int attackCount = 1);
 
     public void Heal(int healAmount);

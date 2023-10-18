@@ -55,11 +55,13 @@ public class Player : MonoBehaviour, ISkillCaster
     private int attackCount = 0;
     private int attackDamageMin;
     private int attackDamageMax;
+    private int lastAttackDamage;
     private int actionPointMaxCount;
     private int availableActionPointCount;
     private int hpAmount;
     private int equippedSkillCountMax;
     private int backupSkillCountMax;
+    private int attackModifyAmount;
     private Enemy battlingEnemy;
     private List<Skill> equippedSkillList = new List<Skill>();
     private List<Skill> backUpSkillList = new List<Skill>();
@@ -101,6 +103,11 @@ public class Player : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public void SetAttackModify(int modifyAmount)
+    {
+        attackModifyAmount = modifyAmount;
     }
 
     public void ExchangeSkill(int equippedSkillIndex, int backupSkillIndex)
@@ -254,6 +261,17 @@ public class Player : MonoBehaviour, ISkillCaster
 
     public void TakeDamage(int damage)
     {
+        // Check shield
+        foreach (Transform buffTransform in buffContainerTransform)
+        {
+            if (buffTransform.TryGetComponent(out Shield shield))
+            {
+                float shieldModifier = shield.GetShieldModifier();
+                damage = (int)(damage * shieldModifier);
+                break;
+            }
+        }
+
         hpAmount -= damage;
         hpAmount = Math.Max(0, hpAmount);
 
@@ -318,6 +336,7 @@ public class Player : MonoBehaviour, ISkillCaster
         attackDamageMax = damageMax;
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
+        attackModifyAmount = 0;
     }
 
     private void TryAttack()
@@ -332,6 +351,7 @@ public class Player : MonoBehaviour, ISkillCaster
                 isEndingAttack = true;
 
                 int attackDamage = UnityEngine.Random.Range(attackDamageMin, attackDamageMax + 1);
+                lastAttackDamage = attackDamage;
                 battlingEnemy.TakeDamage(attackDamage);
 
                 if (battlingEnemy.GetHPAmount() == 0)
@@ -353,6 +373,12 @@ public class Player : MonoBehaviour, ISkillCaster
                 if (attackCount > 0)
                 {
                     isAttacking = true;
+
+                    if (attackModifyAmount > 0)
+                    {
+                        attackDamageMin = lastAttackDamage + attackModifyAmount;
+                        attackDamageMax = lastAttackDamage + attackModifyAmount;
+                    }
                 }
             }
         }

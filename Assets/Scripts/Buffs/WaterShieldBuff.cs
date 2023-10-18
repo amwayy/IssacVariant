@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HalfShield : Shield
+public class WaterShieldBuff : Shield
 {
 
 }

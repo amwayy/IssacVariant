@@ -20,11 +20,11 @@ public class SeedBullet : Skill
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
-        int randomAttckCount = Random.Range(minAttackCount, maxAttackCount + 1);
-        castTime = singleCastTime * randomAttckCount;
+        int randomAttackCount = Random.Range(minAttackCount, maxAttackCount + 1);
+        castTime = singleCastTime * randomAttackCount;
 
         base.CastSkill(skillCaster);
 
-        skillCaster.SetAttack(singleDamageMin, singleDamageMax, attackSpeed, randomAttckCount);
+        skillCaster.SetAttack(singleDamageMin, singleDamageMax, attackSpeed, randomAttackCount);
     }
 }

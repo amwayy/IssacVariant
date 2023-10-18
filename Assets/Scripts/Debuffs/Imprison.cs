@@ -4,8 +4,5 @@ using UnityEngine;
 
 public class Imprison : Debuff
 {
-    public override void MakeEffect()
-    {
-        base.MakeEffect();
-    }
+
 }

@@ -51,6 +51,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private int hpAmount;
     private int attackDamageMin;
     private int attackDamageMax;
+    private int lastAttackDamage;
+    private int attackModifyAmount;
     private List<Skill> equippedSkillList = new List<Skill>();
 
 
@@ -89,6 +91,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+    public void SetAttackModify(int modifyAmount)
+    {
+        attackModifyAmount = modifyAmount;
     }
 
     public Transform GetBuffContainerTransform()
@@ -217,6 +223,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
                 isEndingAttack = true;
 
                 int attackDamage = UnityEngine.Random.Range(attackDamageMin, attackDamageMax + 1);
+                lastAttackDamage = attackDamage;
                 Player.Instance.TakeDamage(attackDamage);
 
                 if (Player.Instance.GetHPAmount() == 0)
@@ -237,6 +244,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
                 if (attackCount > 0)
                 {
                     isAttacking = true;
+
+                    if (attackModifyAmount > 0)
+                    {
+                        attackDamageMin = lastAttackDamage + attackModifyAmount;
+                        attackDamageMax = lastAttackDamage + attackModifyAmount;
+                    }
                 }
             }
         }
@@ -281,6 +294,15 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     public void TakeDamage(int damage)
     {
+        foreach (Transform buffTransform in buffContainerTransform)
+        {
+            if (buffTransform.TryGetComponent(out Shield halfShield))
+            {
+                damage = damage / 2;
+                break;
+            }
+        }
+
         hpAmount -= damage;
         hpAmount = Math.Max(0, hpAmount);
 

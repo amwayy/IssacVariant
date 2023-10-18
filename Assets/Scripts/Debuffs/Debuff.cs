@@ -80,14 +80,16 @@ public class Debuff : MonoBehaviour
     private void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
     {
         MakeEffect();
+        DecreaseCountdown();
     }
 
     private void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
     {
         MakeEffect();
+        DecreaseCountdown();
     }
 
-    public virtual void MakeEffect()
+    private void DecreaseCountdown()
     {
         countdown--;
         countdownText.text = countdown.ToString();
@@ -95,6 +97,11 @@ public class Debuff : MonoBehaviour
         {
             DestroySelf();
         }
+    }
+
+    public virtual void MakeEffect()
+    {
+
     }
 
     private void OnDestroy()

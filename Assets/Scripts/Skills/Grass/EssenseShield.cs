@@ -29,12 +29,15 @@ public class EssenseShield : Skill
         bool isInHalfShield = false;
         HalfShield halfShield = null;
         Transform buffContainerTransform = skillCaster.GetBuffContainerTransform();
-        foreach (Transform debuffTransform in buffContainerTransform)
+        foreach (Transform buffTransform in buffContainerTransform)
         {
-            if (debuffTransform.TryGetComponent(out halfShield))
+            if (buffTransform.TryGetComponent(out halfShield))
             {
                 isInHalfShield = true;
                 break;
+            } else if (buffTransform.TryGetComponent(out Shield shield))
+            {
+                shield.DestroySelf();
             }
         }
 

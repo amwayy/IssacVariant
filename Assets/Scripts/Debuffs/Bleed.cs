@@ -9,7 +9,5 @@ public class Bleed : Debuff
     public override void MakeEffect()
     {
         debuffOwner.TakeDamage(bleedDamage);
-
-        base.MakeEffect();
     }
 }
