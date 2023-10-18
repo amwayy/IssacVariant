@@ -44,3 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd6694187e595554fbd6983b2c80c825, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  element: 2
+  thisActionPointExpense: 1
+  singleDamageMin: 15
+  singleDamageMax: 25
+  minAttackCount: 2
+  maxAttackCount: 4
+  attackModifyAmount: 15
+  attackSpeed: 20
+  singleCastTime: 1

@@ -6,6 +6,16 @@ public interface ISkillCaster
 {
     private const float ENTER_BATTLE_SPEED = 15f;
 
+    // 按百分比修改攻击力
+    public void SetATK(int atk);
+
+    // 按百分比修改防御力
+    public void SetDEF(int def);
+
+    public int GetATK();
+
+    public int GetDEF();
+
     public void EndTurn();
 
     public Transform GetBuffContainerTransform();
@@ -18,7 +28,7 @@ public interface ISkillCaster
 
     public void SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax);
 
-    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax);
+    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0);
 
     public void SetCastSkill(float castTime);
 

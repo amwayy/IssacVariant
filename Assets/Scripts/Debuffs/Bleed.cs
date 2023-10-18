@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bleed : Debuff
+public class Bleed : Anomaly
 {
     [SerializeField] private int bleedDamage = 20;
 

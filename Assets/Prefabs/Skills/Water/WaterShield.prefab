@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8788ebe8625efc1449f9e812cddef388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  element: 2
   thisActionPointExpense: 2
   waterShieldCountdownMax: 2
   damageMin: 65

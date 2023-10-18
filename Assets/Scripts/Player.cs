@@ -8,13 +8,15 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private float playerMoveSpeed;
     [SerializeField] private float playerHeight;
     [SerializeField] private float playerWidth;
-    [SerializeField] private int initialActionPointMaxCount = 3;
+    [SerializeField] private int defaultActionPointMaxCount = 3;
     [SerializeField] private int hpMaxAmount = 500;
     [SerializeField] private int defaultEquippedSkillCountMax = 4;
     [SerializeField] private int defaultBackupSkillCountMax = 6;
     [SerializeField] private Vector3 attackPosBias;
     [SerializeField] private Transform debuffContainerTransform;
     [SerializeField] private Transform buffContainerTransform;
+    [SerializeField] private int atk = 100;
+    [SerializeField] private int def = 100;
 
     public static Player Instance { get; private set; }
 
@@ -24,6 +26,7 @@ public class Player : MonoBehaviour, ISkillCaster
     public event EventHandler OnTurnEnd;
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
+    public event EventHandler<int> OnModifyActionPoint;
 
     public enum Orientation
     {
@@ -72,7 +75,7 @@ public class Player : MonoBehaviour, ISkillCaster
 
         playerRigidbody = GetComponent<Rigidbody2D>();
 
-        actionPointMaxCount = initialActionPointMaxCount;
+        actionPointMaxCount = defaultActionPointMaxCount;
         availableActionPointCount = actionPointMaxCount;
         hpAmount = hpMaxAmount;
         attackSpeed = DEFAULT_ATTACK_SPEED;
@@ -103,6 +106,41 @@ public class Player : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public void ModifyActionPointMax(int modifyAmount)
+    {
+        actionPointMaxCount += modifyAmount;
+
+        if (modifyAmount > 0)
+        {
+            availableActionPointCount += modifyAmount;
+        }
+        if (modifyAmount < 0)
+        {
+            availableActionPointCount = Math.Min(availableActionPointCount, actionPointMaxCount);
+        }
+
+        OnModifyActionPoint?.Invoke(this, modifyAmount);
+    }
+
+    public int GetATK()
+    {
+        return atk;
+    }
+
+    public int GetDEF()
+    {
+        return def;
+    }
+
+    public void SetATK(int atk)
+    {
+        this.atk = atk;
+    }
+    public void SetDEF(int def)
+    {
+        this.def = def;
     }
 
     public void SetAttackModify(int modifyAmount)
@@ -161,15 +199,22 @@ public class Player : MonoBehaviour, ISkillCaster
         buffTransform.GetComponent<Buff>().Initialize(this, countdownMax, setBuffTimerMax);
     }
 
-    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
+    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0)
     {
-        if (debuffContainerTransform.childCount != 0)
+        if (debuffPrefab.TryGetComponent(out Anomaly anomaly))
         {
-            debuffContainerTransform.GetChild(0).GetComponent<Debuff>().DestroySelf();
+            foreach (Transform debuffChildTransform in debuffContainerTransform)
+            {
+                if (debuffChildTransform.TryGetComponent(out Anomaly oldAnomaly))
+                {
+                    oldAnomaly.DestroySelf();
+                    break;
+                }
+            }
         }
 
         Transform debuffTransform = Instantiate(debuffPrefab, debuffContainerTransform);
-        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
+        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax, extraCountdown);
     }
 
     public ISkillCaster GetOpponent()
@@ -207,14 +252,15 @@ public class Player : MonoBehaviour, ISkillCaster
         // 初期开发设定
 
         // player携带全部技能列表的后4个（方便测试最新技能）
-        List<Skill> allSkillList = GameLibrary.Instance.getAllSkillList();
+        List<Skill> allSkillList = GameLibrary.Instance.GetAllSkillList();
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
             equippedSkillList.Add(allSkillList[allSkillList.Count - 1 - i]);
         }
 
         // 剩下的技能加入背包
-        for (int i = 0; i < allSkillList.Count - equippedSkillCountMax; i++)
+        int backupSkillCount = Math.Min(allSkillList.Count - equippedSkillCountMax, backupSkillCountMax);
+        for (int i = 0; i < backupSkillCount; i++)
         {
             backUpSkillList.Add(allSkillList[i]);
         }
@@ -227,6 +273,7 @@ public class Player : MonoBehaviour, ISkillCaster
 
     private void TurnManager_OnEnterPlayerTurn(object sender, EventArgs e)
     {
+        ModifyActionPointMax(defaultActionPointMaxCount - actionPointMaxCount);
         availableActionPointCount = actionPointMaxCount;
 
         if (debuffContainerTransform.childCount != 0)
@@ -237,6 +284,11 @@ public class Player : MonoBehaviour, ISkillCaster
             foreach (Transform debuffTransform in debuffContainerTransform)
             {
                 if (debuffTransform.TryGetComponent(out Imprison imprison))
+                {
+                    isImprisoned = true;
+                    break;
+                }
+                if (debuffTransform.TryGetComponent(out Drown drown) && drown.GetCountdown() > 1)
                 {
                     isImprisoned = true;
                     break;
@@ -332,8 +384,8 @@ public class Player : MonoBehaviour, ISkillCaster
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
     {
         isAttacking = true;
-        attackDamageMin = damageMin;
-        attackDamageMax = damageMax;
+        attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF());
+        attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF());
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
         attackModifyAmount = 0;

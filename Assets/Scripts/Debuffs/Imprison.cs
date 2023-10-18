@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Imprison : Debuff
+public class Imprison : Anomaly
 {
 
 }

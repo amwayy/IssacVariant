@@ -16,6 +16,9 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private Transform debuffContainerTransform;
     [SerializeField] private Transform buffContainerTransform;
     [SerializeField] private Vector3 attackPosBias;
+    [SerializeField] private int atk = 100;
+    [SerializeField] private int def = 100;
+    [SerializeField] GameLibrary.Element element;
 
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
@@ -92,6 +95,27 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         HandleMovement();
     }
+
+    public int GetATK()
+    {
+        return atk;
+    }
+
+    public int GetDEF()
+    {
+        return def;
+    }
+
+    public void SetATK(int atk)
+    {
+        this.atk = atk;
+    }
+
+    public void SetDEF(int def)
+    {
+        this.def = def;
+    }
+
     public void SetAttackModify(int modifyAmount)
     {
         attackModifyAmount = modifyAmount;
@@ -154,15 +178,22 @@ public class Enemy : MonoBehaviour, ISkillCaster
         buffTransform.GetComponent<Buff>().Initialize(this, countdownMax, setBuffTimerMax);
     }
 
-    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
+    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0)
     {
-        if (debuffContainerTransform.childCount != 0)
+        if (debuffPrefab.TryGetComponent(out Anomaly anomaly))
         {
-            debuffContainerTransform.GetChild(0).GetComponent<Debuff>().DestroySelf();
+            foreach (Transform debuffChildTransform in debuffContainerTransform)
+            {
+                if (debuffChildTransform.TryGetComponent(out Anomaly oldAnomaly))
+                {
+                    oldAnomaly.DestroySelf();
+                    break;
+                }
+            }
         }
 
         Transform debuffTransform = Instantiate(debuffPrefab, debuffContainerTransform);
-        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
+        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax, extraCountdown);
     }
 
     public ISkillCaster GetOpponent()
@@ -193,10 +224,15 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void InitializeSkill()
     {
-        List<Skill> allSkillList = GameLibrary.Instance.getAllSkillList();
+        List<Skill> skillList = new List<Skill>();
+        foreach (Skill elementSkill in GameLibrary.Instance.GetElementSkillList(element))
+        {
+            skillList.Add(elementSkill);
+        }
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
-            Skill randomSkill = allSkillList[UnityEngine.Random.Range(0, allSkillList.Count)];
+            Skill randomSkill = skillList[UnityEngine.Random.Range(0, skillList.Count)];
+            skillList.Remove(randomSkill);
             Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
             equippedSkillList.Add(skill);
         }
@@ -205,8 +241,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
     {
         isAttacking = true;
-        attackDamageMin = damageMin;
-        attackDamageMax = damageMax;
+        attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF());
+        attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF());
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
     }
@@ -270,6 +306,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
             foreach (Transform debuffTransform in debuffContainerTransform)
             {
                 if (debuffTransform.TryGetComponent(out Imprison imprison))
+                {
+                    isImprisoned = true;
+                    break;
+                }
+                if (debuffTransform.TryGetComponent(out Drown drown) && drown.GetCountdown() > 1)
                 {
                     isImprisoned = true;
                     break;

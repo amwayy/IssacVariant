@@ -8,8 +8,7 @@ using UnityEngine.UI;
 public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private TextMeshProUGUI skillText;
-    [SerializeField] private Color enableColor;
-    [SerializeField] private Color disableColor;
+    [SerializeField] private GameObject disableVisualGameObject;
     [SerializeField] private TextMeshProUGUI coolingCountdownText;
     [SerializeField] private GameObject coolingVisualGameObject;
     [SerializeField] private Image coolingBackgroundImage;
@@ -70,10 +69,10 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
     {
         if (hasExchangedSkill)
         {
-            backgroundImage.color = disableColor;
+            disableVisualGameObject.SetActive(true);
         } else
         {
-            backgroundImage.color = enableColor;
+            disableVisualGameObject.SetActive(false);
         }
 
         UpdateCoolingVisual();
@@ -102,6 +101,8 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
         skill = Instantiate(skill, transform);
         skillText.text = skill.GetSkillName();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
+
+        transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
     }
 
     public void OnDrag(PointerEventData eventData)

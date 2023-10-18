@@ -10,21 +10,16 @@ public class Debuff : MonoBehaviour
     [SerializeField] private float debuffMakeEffectTimerMax = .5f;   // Debuff生效动画的时间
 
     protected ISkillCaster debuffOwner;
+    protected int countdown;
 
     private float setDebuffTimer;
     private float setDebuffTimerMax;
     private bool isSettingDebuff = true;
-    private int countdown;
 
     private void Start()
     {
-        if (debuffOwner.IsPlayer())
-        {
-            TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
-        } else
-        {
-            TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
-        }
+        TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
+        TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
     }
 
     private void Update()
@@ -52,7 +47,7 @@ public class Debuff : MonoBehaviour
         return debuffMakeEffectTimerMax;
     }
 
-    private void ShowVisual()
+    protected virtual void ShowVisual()
     {
         countdownText.text = countdown.ToString();
 
@@ -66,10 +61,10 @@ public class Debuff : MonoBehaviour
         iconGameObject.SetActive(false);
     }
 
-    public void Initialize(ISkillCaster skillCaster, int countdown, float setDebuffTimerMax)
+    public virtual void Initialize(ISkillCaster skillCaster, int countdown, float setDebuffTimerMax, int extraCountdown)
     {
         this.countdown = countdown;
-        this.debuffOwner = skillCaster;
+        debuffOwner = skillCaster;
         countdownText.text = countdown.ToString();
         this.setDebuffTimerMax = setDebuffTimerMax;
         setDebuffTimer = setDebuffTimerMax;
@@ -77,26 +72,31 @@ public class Debuff : MonoBehaviour
         HideVisual();
     }
 
-    private void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
+    protected virtual void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
     {
-        MakeEffect();
-        DecreaseCountdown();
+
     }
 
-    private void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
+    protected virtual void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
     {
-        MakeEffect();
-        DecreaseCountdown();
+
     }
 
-    private void DecreaseCountdown()
+    protected virtual void DecreaseCountdown()
     {
         countdown--;
         countdownText.text = countdown.ToString();
+
+        CheckCountdown();
+    }
+
+    protected virtual void CheckCountdown()
+    {
         if (countdown == 0)
         {
             DestroySelf();
         }
+
     }
 
     public virtual void MakeEffect()

@@ -84,6 +84,12 @@ public class EquippedSkill : MonoBehaviour
         skill = Instantiate(skill, transform);
         skillText.text = skill.GetSkillName();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
+
+        transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
+        if (skill.GetElement() == GameLibrary.Element.Light)
+        {
+            skillText.color = Color.black;
+        }
     }
 
     private void CastSkill()

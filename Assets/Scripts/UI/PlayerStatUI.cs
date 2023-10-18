@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PlayerStatUI : MonoBehaviour
 {
     [SerializeField] private Transform actionPointContainerTransform;
+    [SerializeField] private Transform actionPointPrefab;
     [SerializeField] private Image hpBarImage;
 
     private void Awake()
@@ -21,6 +22,26 @@ public class PlayerStatUI : MonoBehaviour
         Player.Instance.OnEnterBattle += Player_OnEnterBattle;
         Player.Instance.OnQuitBattle += Player_OnQuitBattle;
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
+        Player.Instance.OnModifyActionPoint += Player_OnModifyActionPoint;
+    }
+
+    private void Player_OnModifyActionPoint(object sender, int e)
+    {
+        if (e > 0)
+        {
+            Instantiate(actionPointPrefab, actionPointContainerTransform);
+        }
+        if (e < 0)
+        {
+            for (int i = 0; i < -e; i++)
+            {
+                Transform actionPointVisualTransform = actionPointContainerTransform.GetChild(0);
+                actionPointVisualTransform.SetParent(null);
+                Destroy(actionPointVisualTransform.gameObject);
+            }
+        }
+
+        UpdateActionPointVisual();
     }
 
     private void Player_OnHeal(object sender, System.EventArgs e)
@@ -60,6 +81,11 @@ public class PlayerStatUI : MonoBehaviour
 
     private void Player_OnCastSkill(object sender, System.EventArgs e)
     {
+        UpdateActionPointVisual();
+    }
+
+    private void UpdateActionPointVisual()
+    {
         int availableActionPointCount = Player.Instance.GetAvailableActionPointCount();
 
         for (int i = 0; i < actionPointContainerTransform.childCount; i++)
@@ -68,7 +94,8 @@ public class PlayerStatUI : MonoBehaviour
             if (i < availableActionPointCount)
             {
                 actionPointVisual.Fill();
-            } else
+            }
+            else
             {
                 actionPointVisual.Unfill();
             }
