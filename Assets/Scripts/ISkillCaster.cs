@@ -8,11 +8,15 @@ public interface ISkillCaster
 
     public void EndTurn();
 
+    public Transform GetBuffContainerTransform();
+
     public Transform GetDebuffContainerTransform();
 
     public void TakeDamage(int damage);
 
     public ISkillCaster GetOpponent();
+
+    public void SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax);
 
     public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax);
 

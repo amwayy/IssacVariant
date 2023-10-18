@@ -13,7 +13,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private int attackCount = 1;
     [SerializeField] private int equippedSkillCountMax = 4;
     [SerializeField] private Transform equippedSkillsTransform;
-    [SerializeField] private Transform debuffsTransform;
+    [SerializeField] private Transform debuffContainerTransform;
+    [SerializeField] private Transform buffContainerTransform;
     [SerializeField] private Vector3 attackPosBias;
 
     public event EventHandler<int> OnTakeDamage;
@@ -90,9 +91,14 @@ public class Enemy : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
+    public Transform GetBuffContainerTransform()
+    {
+        return buffContainerTransform;
+    }
+
     public Transform GetDebuffContainerTransform()
     {
-        return debuffsTransform;
+        return debuffContainerTransform;
     }
 
     private void TryDebuffMakeEffect()
@@ -136,14 +142,20 @@ public class Enemy : MonoBehaviour, ISkillCaster
         equippedSkillList[castedSkillIndex].CastSkill(this);
     }
 
+    public void SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax)
+    {
+        Transform buffTransform = Instantiate(buffPrefab, buffContainerTransform);
+        buffTransform.GetComponent<Buff>().Initialize(this, countdownMax, setBuffTimerMax);
+    }
+
     public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax)
     {
-        if (debuffsTransform.childCount != 0)
+        if (debuffContainerTransform.childCount != 0)
         {
-            debuffsTransform.GetChild(0).GetComponent<Debuff>().DestroySelf();
+            debuffContainerTransform.GetChild(0).GetComponent<Debuff>().DestroySelf();
         }
 
-        Transform debuffTransform = Instantiate(debuffPrefab, debuffsTransform);
+        Transform debuffTransform = Instantiate(debuffPrefab, debuffContainerTransform);
         debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax);
     }
 
@@ -237,12 +249,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void TurnManager_OnEnterEnemyTurn(object sender, EventArgs e)
     {
-        if (debuffsTransform.childCount != 0)
+        if (debuffContainerTransform.childCount != 0)
         {
             isDebuffMakingEffect = true;
-            debuffMakeEffectTimer = debuffsTransform.GetChild(0).GetComponent<Debuff>().GetDebuffMakeEffectTimerMax();
+            debuffMakeEffectTimer = debuffContainerTransform.GetChild(0).GetComponent<Debuff>().GetDebuffMakeEffectTimerMax();
 
-            foreach (Transform debuffTransform in debuffsTransform)
+            foreach (Transform debuffTransform in debuffContainerTransform)
             {
                 if (debuffTransform.TryGetComponent(out Imprison imprison))
                 {

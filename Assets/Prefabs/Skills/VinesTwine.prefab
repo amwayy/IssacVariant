@@ -50,4 +50,4 @@ MonoBehaviour:
   thisCastTime: 1
   imprisonProbability: 0.2
   setDebuffTimerMax: 0.5
-  imprisonDebuffPrefab: {fileID: 3930392331736949166, guid: f93f0d529536f0e449da609cce395f93, type: 3}
+  imprisonDebuffPrefab: {fileID: 2463174454272902535, guid: 7ebe7258ec02a1b4ab7b64df413e339e, type: 3}

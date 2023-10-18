@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1890486359110900325
+--- !u!1 &9164202994172025593
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8802115781196531698}
-  - component: {fileID: 1135718138326576045}
+  - component: {fileID: 3930392331736949166}
+  - component: {fileID: 9098605862331413382}
   m_Layer: 0
-  m_Name: SharpLeaf
+  m_Name: Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8802115781196531698
+--- !u!4 &3930392331736949166
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1890486359110900325}
+  m_GameObject: {fileID: 9164202994172025593}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,23 +32,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1135718138326576045
+--- !u!114 &9098605862331413382
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1890486359110900325}
+  m_GameObject: {fileID: 9164202994172025593}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea1de801968c2694c969ec9135f2993d, type: 3}
+  m_Script: {fileID: 11500000, guid: 80e8465d37cfc0949a725709f887392b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thisActionPointExpense: 1
-  damageMin: 70
-  damageMax: 80
-  bleedCountdownMax: 4
-  thisCastTime: 1
-  bleedProbability: 0.2
-  setDebuffTimerMax: 0.5
-  bleedDebuffPrefab: {fileID: 2463174454272902535, guid: e29cf289dd21dfe47bce457ee516718c, type: 3}

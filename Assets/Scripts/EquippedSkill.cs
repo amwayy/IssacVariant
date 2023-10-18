@@ -7,10 +7,19 @@ using TMPro;
 public class EquippedSkill : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI skillText;
+    [SerializeField] private TextMeshProUGUI coolingCountdownText;
+    [SerializeField] private GameObject coolingVisualGameObject;
+    [SerializeField] private Image coolingBackgroundImage;
+    [SerializeField] private float coolingCountdownSpeed = 5f;
+
+    private const float EPISILON = .05f;
 
     private Button skillButton;
     private int equippedSkillIndex;
+    private int coolingCountdown;
+    private int coolingCountdownMax;
     private Skill skill;
+    private float coolingBakgroundTargetFillAmount = 1f;
 
     private void Awake()
     {
@@ -18,11 +27,46 @@ public class EquippedSkill : MonoBehaviour
         equippedSkillIndex = transform.GetSiblingIndex();
 
         skillButton.onClick.AddListener(CastSkill);
+
+        coolingVisualGameObject.SetActive(false);
     }
 
     private void Start()
     {
         UpdateSkill();
+
+        TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
+    }
+
+    private void Update()
+    {
+        UpdateCoolingVisual();
+    }
+
+    public void SetCoolingCountdown(int countdown, int countdownMax)
+    {
+        coolingCountdown = countdown;
+        coolingCountdownMax = countdownMax;
+        UpdateCoolingCountdown();
+    }
+
+    public int GetCoolingCountdown()
+    {
+        return coolingCountdown;
+    }
+
+    public int GetCoolingCountdownMax()
+    {
+        return coolingCountdownMax;
+    }
+
+    private void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
+    {
+        if (coolingCountdown > 0)
+        {
+            coolingCountdown--;
+            UpdateCoolingCountdown();
+        }
     }
 
     public void UpdateSkill()
@@ -39,6 +83,7 @@ public class EquippedSkill : MonoBehaviour
         skill = Player.Instance.GetEquippedSkillList()[equippedSkillIndex];
         skill = Instantiate(skill, transform);
         skillText.text = skill.GetSkillName();
+        coolingCountdownMax = skill.GetCoolingCountdownMax();
     }
 
     private void CastSkill()
@@ -47,7 +92,36 @@ public class EquippedSkill : MonoBehaviour
         if (Player.Instance.IsDebuffMakingEffect()) return;
         if (TurnManager.Instance.GetTurnState() == TurnManager.Turn.Enemy) return;
         if (Player.Instance.GetAvailableActionPointCount() < skill.GetActionPointExpense()) return;
+        if (coolingCountdown > 0) return;
 
         skill.CastSkill(Player.Instance);
+
+        coolingCountdown = coolingCountdownMax;
+        Debug.Log("Cooling Countdown: " + coolingCountdown);
+        UpdateCoolingCountdown();
+    }
+
+    private void UpdateCoolingCountdown()
+    {
+        coolingCountdownText.text = coolingCountdown.ToString();
+
+        coolingBakgroundTargetFillAmount = (float)coolingCountdown / coolingCountdownMax;
+    }
+
+    private void UpdateCoolingVisual()
+    {
+        if (coolingCountdown > 0 || coolingBackgroundImage.fillAmount > EPISILON)
+        {
+            coolingVisualGameObject.SetActive(true);
+            coolingBackgroundImage.fillAmount = Mathf.Lerp(coolingBackgroundImage.fillAmount, coolingBakgroundTargetFillAmount, Time.deltaTime * coolingCountdownSpeed);
+        } else
+        {
+            coolingVisualGameObject.SetActive(false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
     }
 }

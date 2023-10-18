@@ -39,6 +39,11 @@ public class BattleUI : MonoBehaviour
     {
         equippedSkillList[equippedSkillIndex].UpdateSkill();
         backupSkillList[backupSkillIndex].UpdateSkill();
+
+        foreach (BackupSkill backupSkill in backupSkillList)
+        {
+            backupSkill.SetHasExchanged();
+        }
     }
 
     public List<EquippedSkill> GetEquippedSkillList()

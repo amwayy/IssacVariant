@@ -6,10 +6,11 @@ public class Skill : MonoBehaviour
 {
     protected string skillName;
     protected int actionPointExpense;
+    protected int coolingCountdownMax = 3;   // 冷却回合数，暂全设为3
     protected float castTime;   // 技能释放的动画时间（秒）
     protected ISkillCaster skillCaster;
 
-    virtual public string GetSkillName ()
+    public string GetSkillName ()
     {
         return skillName;
     }
@@ -17,6 +18,11 @@ public class Skill : MonoBehaviour
     public int GetActionPointExpense()
     {
         return actionPointExpense;
+    }
+
+    public int GetCoolingCountdownMax()
+    {
+        return coolingCountdownMax;
     }
 
     virtual public void CastSkill(ISkillCaster skillCaster)
