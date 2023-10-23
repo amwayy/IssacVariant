@@ -226,6 +226,10 @@ MonoBehaviour:
   debuffContainerTransform: {fileID: 2968884696087327589}
   buffContainerTransform: {fileID: 1264424302906196110}
   attackPosBias: {x: 0.32, y: 0.22, z: 0}
+  atk: 100
+  def: 100
+  element: 0
+  chestPrefab: {fileID: 9063831056971545337, guid: d1af9b157f9566b468ef7125be1475a5, type: 3}
 --- !u!61 &2151240641143420229
 BoxCollider2D:
   m_ObjectHideFlags: 0

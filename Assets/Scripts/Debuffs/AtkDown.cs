@@ -5,9 +5,15 @@ using UnityEngine;
 
 public class AtkDown : Debuff
 {
-    [SerializeField] private float atkDownPercentage = .2f;
-
+    private float atkDownPercentage;
     private int lastAtk;
+
+    public void SetAtkDownPercentage(float atkDownPercentage)
+    {
+        this.atkDownPercentage = atkDownPercentage;
+
+        MakeEffect();
+    }
 
     protected override void TurnManager_OnEnterPlayerTurn(object sender, EventArgs e)
     {
@@ -23,13 +29,6 @@ public class AtkDown : Debuff
         {
             DecreaseCountdown();
         }
-    }
-
-    public override void Initialize(ISkillCaster skillCaster, int countdown, float setDebuffTimerMax, int extraCountdown)
-    {
-        base.Initialize(skillCaster, countdown, setDebuffTimerMax, extraCountdown);
-
-        MakeEffect();
     }
 
     public override void MakeEffect()

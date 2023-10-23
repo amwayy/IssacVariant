@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class EquippedSkill : MonoBehaviour
+public class EquippedSkillVisual : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI skillText;
     [SerializeField] private TextMeshProUGUI coolingCountdownText;
@@ -20,11 +20,13 @@ public class EquippedSkill : MonoBehaviour
     private int coolingCountdownMax;
     private Skill skill;
     private float coolingBakgroundTargetFillAmount = 1f;
+    private int index;
 
     private void Awake()
     {
         skillButton = GetComponent<Button>();
         equippedSkillIndex = transform.GetSiblingIndex();
+        index = transform.GetSiblingIndex();
 
         skillButton.onClick.AddListener(CastSkill);
 
@@ -36,6 +38,9 @@ public class EquippedSkill : MonoBehaviour
         UpdateSkill();
 
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
+
+        coolingCountdown = Player.Instance.GetEquippedSkillCoolingCountdown(index);
+        UpdateCoolingCountdown();
     }
 
     private void Update()
@@ -89,6 +94,9 @@ public class EquippedSkill : MonoBehaviour
         if (skill.GetElement() == GameLibrary.Element.Light)
         {
             skillText.color = Color.black;
+        } else
+        {
+            skillText.color = Color.white;
         }
     }
 
@@ -99,19 +107,26 @@ public class EquippedSkill : MonoBehaviour
         if (TurnManager.Instance.GetTurnState() == TurnManager.Turn.Enemy) return;
         if (Player.Instance.GetAvailableActionPointCount() < skill.GetActionPointExpense()) return;
         if (coolingCountdown > 0) return;
+        if (!BattleManager.Instance.IsInBattle()) return;
 
         skill.CastSkill(Player.Instance);
 
         coolingCountdown = coolingCountdownMax;
-        Debug.Log("Cooling Countdown: " + coolingCountdown);
         UpdateCoolingCountdown();
     }
 
     private void UpdateCoolingCountdown()
     {
+        Player.Instance.SetEquippedSkillCoolingCountdown(index, coolingCountdown);
+
         coolingCountdownText.text = coolingCountdown.ToString();
 
         coolingBakgroundTargetFillAmount = (float)coolingCountdown / coolingCountdownMax;
+
+        if (!BattleManager.Instance.IsInBattle())
+        {
+            coolingBackgroundImage.fillAmount = coolingBakgroundTargetFillAmount;
+        }
     }
 
     private void UpdateCoolingVisual()
@@ -119,7 +134,10 @@ public class EquippedSkill : MonoBehaviour
         if (coolingCountdown > 0 || coolingBackgroundImage.fillAmount > EPISILON)
         {
             coolingVisualGameObject.SetActive(true);
-            coolingBackgroundImage.fillAmount = Mathf.Lerp(coolingBackgroundImage.fillAmount, coolingBakgroundTargetFillAmount, Time.deltaTime * coolingCountdownSpeed);
+            if (BattleManager.Instance.IsInBattle())
+            {
+                coolingBackgroundImage.fillAmount = Mathf.Lerp(coolingBackgroundImage.fillAmount, coolingBakgroundTargetFillAmount, Time.deltaTime * coolingCountdownSpeed);
+            }
         } else
         {
             coolingVisualGameObject.SetActive(false);

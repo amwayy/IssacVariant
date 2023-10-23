@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1de801968c2694c969ec9135f2993d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  element: 0
+  isEnemyUnappliable: 0
   thisActionPointExpense: 1
   damageMin: 70
   damageMax: 80

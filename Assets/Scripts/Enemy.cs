@@ -19,9 +19,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private int atk = 100;
     [SerializeField] private int def = 100;
     [SerializeField] GameLibrary.Element element;
+    [SerializeField] private Transform chestPrefab;
 
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
+    public event EventHandler<int> OnCheckShield;
+    public event EventHandler OnEndCastSkill;
 
     public enum Orientation
     {
@@ -57,7 +60,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private int lastAttackDamage;
     private int attackModifyAmount;
     private List<Skill> equippedSkillList = new List<Skill>();
-
+    private bool isRealDamage;   // 受到的是否为真实伤害，即是否无视护盾
+    private int damageTaken;
 
     private void Awake()
     {
@@ -94,6 +98,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public void SetDamageTaken(int modifiedDamage)
+    {
+        damageTaken = modifiedDamage;
     }
 
     public int GetATK()
@@ -170,15 +179,20 @@ public class Enemy : MonoBehaviour, ISkillCaster
         isCastingSkill = true;
         int castedSkillIndex = UnityEngine.Random.Range(0, equippedSkillList.Count);
         equippedSkillList[castedSkillIndex].CastSkill(this);
+
+        Debug.Log("Enemy Casted" + equippedSkillList[castedSkillIndex].GetSkillName());
     }
 
-    public void SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax)
+    public Buff SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax)
     {
         Transform buffTransform = Instantiate(buffPrefab, buffContainerTransform);
-        buffTransform.GetComponent<Buff>().Initialize(this, countdownMax, setBuffTimerMax);
+        Buff buff = buffTransform.GetComponent<Buff>();
+        buff.Initialize(this, countdownMax, setBuffTimerMax);
+
+        return buff;
     }
 
-    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0)
+    public Debuff SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0)
     {
         if (debuffPrefab.TryGetComponent(out Anomaly anomaly))
         {
@@ -193,7 +207,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
         }
 
         Transform debuffTransform = Instantiate(debuffPrefab, debuffContainerTransform);
-        debuffTransform.GetComponent<Debuff>().Initialize(this, countdownMax, setDebuffTimerMax, extraCountdown);
+        Debuff debuff = debuffTransform.GetComponent<Debuff>();
+        debuff.Initialize(this, countdownMax, setDebuffTimerMax, extraCountdown);
+
+        return debuff;
     }
 
     public ISkillCaster GetOpponent()
@@ -211,6 +228,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         Debug.Log("Enemy End Cast");
         isCastingSkill = false;
+
+        isRealDamage = false;
+
+        OnEndCastSkill?.Invoke(this, EventArgs.Empty);
+
         EndTurn();
     }
 
@@ -227,6 +249,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
         List<Skill> skillList = new List<Skill>();
         foreach (Skill elementSkill in GameLibrary.Instance.GetElementSkillList(element))
         {
+            if (elementSkill.IsEnemyUnappliable()) continue;
+
             skillList.Add(elementSkill);
         }
         for (int i = 0; i < equippedSkillCountMax; i++)
@@ -238,13 +262,14 @@ public class Enemy : MonoBehaviour, ISkillCaster
         }
     }
 
-    public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1)
+    public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1, bool isRealDamage = false)
     {
         isAttacking = true;
         attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF());
         attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF());
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
+        this.isRealDamage = isRealDamage;
     }
 
     private void TryAttack()
@@ -260,7 +285,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
                 int attackDamage = UnityEngine.Random.Range(attackDamageMin, attackDamageMax + 1);
                 lastAttackDamage = attackDamage;
-                Player.Instance.TakeDamage(attackDamage);
+                Player.Instance.TakeDamage(attackDamage, isRealDamage);
 
                 if (Player.Instance.GetHPAmount() == 0)
                 {
@@ -333,21 +358,27 @@ public class Enemy : MonoBehaviour, ISkillCaster
         return hpMaxAmount;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, bool isRealDamageTaken = false)
     {
-        foreach (Transform buffTransform in buffContainerTransform)
+        damageTaken = damage;
+
+        // Check shield
+        if (!isRealDamageTaken)
         {
-            if (buffTransform.TryGetComponent(out Shield halfShield))
+            foreach (Transform buffTransform in buffContainerTransform)
             {
-                damage = damage / 2;
-                break;
+                if (buffTransform.TryGetComponent(out Shield shield))
+                {
+                    OnCheckShield?.Invoke(this, damageTaken);
+                    break;
+                }
             }
         }
 
-        hpAmount -= damage;
+        hpAmount -= damageTaken;
         hpAmount = Math.Max(0, hpAmount);
 
-        OnTakeDamage?.Invoke(this, damage);
+        OnTakeDamage?.Invoke(this, damageTaken);
 
         if (hpAmount == 0)
         {
@@ -357,7 +388,18 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void Die()
     {
+        Player.Instance.SetLootSkillList(equippedSkillList);
+
+        SpawnChest();
+
         DestroySelf();
+    }
+
+    private void SpawnChest()
+    {
+        Room curRoom = RoomManager.Instance.GetCurRoom();
+        Instantiate(chestPrefab, RoomManager.Instance.transform);
+        chestPrefab.transform.position = curRoom.GetChestPos();
     }
 
     private void Player_OnEnterBattle(object sender, Enemy e)

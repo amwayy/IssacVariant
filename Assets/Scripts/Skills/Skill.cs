@@ -5,12 +5,18 @@ using UnityEngine;
 public class Skill : MonoBehaviour
 {
     [SerializeField] private GameLibrary.Element element;
+    [SerializeField] private bool isEnemyUnappliable = false;   // enemy是否可以具有这个技能
 
     protected string skillName;
     protected int actionPointExpense;
     protected int coolingCountdownMax = 1;   // 冷却回合数，暂全设为1（方便测试）
     protected float castTime;   // 技能释放的动画时间（秒）
     protected ISkillCaster skillCaster;
+
+    public bool IsEnemyUnappliable()
+    {
+        return isEnemyUnappliable;
+    }
 
     public GameLibrary.Element GetElement()
     {

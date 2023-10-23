@@ -17,6 +17,7 @@ public class GameLibrary : MonoBehaviour
     [SerializeField] private Color waterColor;
     [SerializeField] private Color lightColor;
     [SerializeField] private Color darkColor;
+    [SerializeField] private Transform canvasTransform;
 
     public static GameLibrary Instance { get; private set; }
 
@@ -32,6 +33,11 @@ public class GameLibrary : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    public Transform GetCanvasTransform()
+    {
+        return canvasTransform;
     }
 
     public Color GetElementColor(Element element)

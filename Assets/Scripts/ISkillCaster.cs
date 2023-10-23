@@ -1,10 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public interface ISkillCaster
 {
     private const float ENTER_BATTLE_SPEED = 15f;
+
+    public event EventHandler<int> OnCheckShield;   // 传递伤害值
+    public event EventHandler OnEndCastSkill;
+    public event EventHandler<int> OnTakeDamage;
+
+    public void SetDamageTaken(int modifiedDamage);
 
     // 按百分比修改攻击力
     public void SetATK(int atk);
@@ -22,13 +29,13 @@ public interface ISkillCaster
 
     public Transform GetDebuffContainerTransform();
 
-    public void TakeDamage(int damage);
+    public void TakeDamage(int damage, bool isRealDamage = false);
 
     public ISkillCaster GetOpponent();
 
-    public void SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax);
+    public Buff SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax);
 
-    public void SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0);
+    public Debuff SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0);
 
     public void SetCastSkill(float castTime);
 
@@ -41,7 +48,7 @@ public interface ISkillCaster
     // 连段攻击时，每次攻击后对攻击伤害进行修改
     public void SetAttackModify(int modifyAmount);
 
-    public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = ENTER_BATTLE_SPEED, int attackCount = 1);
+    public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = ENTER_BATTLE_SPEED, int attackCount = 1, bool isRealDamage = false);
 
     public void Heal(int healAmount);
 

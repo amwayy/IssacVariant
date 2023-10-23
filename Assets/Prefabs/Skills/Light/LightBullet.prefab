@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 3
+  isEnemyUnappliable: 0
   thisActionPointExpense: 1
   damageMin: 55
   damageMax: 65

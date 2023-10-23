@@ -8,6 +8,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2151240641143420228, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: element
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2151240641143420228, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
       propertyPath: enemyWidth
       value: 2.5
       objectReference: {fileID: 0}

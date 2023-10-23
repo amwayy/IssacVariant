@@ -6,7 +6,7 @@ public class Heal : Skill
 {
     [SerializeField] private int thisActionPointExpense = 1;
     [SerializeField] private float thisCastTime = 1f;
-    [SerializeField] private float healPercentage = 35f;
+    [SerializeField] private float healPercentage = .35f;
 
     private void Awake()
     {
@@ -19,7 +19,7 @@ public class Heal : Skill
     {
         base.CastSkill(skillCaster);
 
-        int healAmount = (int) (skillCaster.GetHPMaxAmount() * .35f);
+        int healAmount = (int) (skillCaster.GetHPMaxAmount() * healPercentage);
         skillCaster.Heal(healAmount);
     }
 }

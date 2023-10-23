@@ -11,6 +11,7 @@ public class SplashWater : Skill
     [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform atkDownDebuffPrefab;
+    [SerializeField] private float atkDownPercentage = .1f;
 
     private void Awake()
     {
@@ -48,7 +49,8 @@ public class SplashWater : Skill
         }
         else
         {
-            skillCaster.GetOpponent().SetDebuff(atkDownDebuffPrefab, atkDownCountdownMax, setDebuffTimerMax);
+            Debuff debuff = skillCaster.GetOpponent().SetDebuff(atkDownDebuffPrefab, atkDownCountdownMax, setDebuffTimerMax);
+            debuff.GetComponent<AtkDown>().SetAtkDownPercentage(atkDownPercentage);
         }
     }
 }

@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private TextMeshProUGUI skillText;
     [SerializeField] private GameObject disableVisualGameObject;
@@ -24,20 +24,23 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
     private Vector3 originalPos;
     private float scaleFactor;
     private float coolingBakgroundTargetFillAmount = 1f;
-    private BattleUI battleUI;
+    private ISkillParentUI skillParentUI;
     private bool hasExchangedSkill;
-    private Image backgroundImage;
+    private int index;
+    private bool isOnDrag;
 
     private void Awake()
     {
         backupSkillIndex = transform.GetSiblingIndex();
 
         rectTransform = GetComponent<RectTransform>();
-        backgroundImage = GetComponent<Image>();
-        battleUI = transform.parent.parent.GetComponent<BattleUI>();
 
         scaleFactor = Screen.height / 1080f;
         originalPos = transform.position;
+        index = transform.GetSiblingIndex();
+
+        disableVisualGameObject.SetActive(false);
+        coolingVisualGameObject.SetActive(false);
     }
 
     private void Start()
@@ -45,6 +48,9 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
         UpdateSkill();
 
         TurnManager.Instance.OnEnterPlayerTurn += Player_OnEnterPlayerTurn;
+
+        coolingCountdown = Player.Instance.GetBackupSkillCoolingCountdown(index);
+        UpdateCoolingCountdown();
     }
 
     private void Update()
@@ -52,12 +58,20 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
         UpdateVisual();
     }
 
+    public void SetSkillParentUI(ISkillParentUI skillParentUI)
+    {
+        this.skillParentUI = skillParentUI;
+    }
+
     private void UpdateCoolingVisual()
     {
         if (coolingCountdown > 0 || coolingBackgroundImage.fillAmount > EPISILON)
         {
             coolingVisualGameObject.SetActive(true);
-            coolingBackgroundImage.fillAmount = Mathf.Lerp(coolingBackgroundImage.fillAmount, coolingBakgroundTargetFillAmount, Time.deltaTime * coolingCountdownSpeed);
+            if (BattleManager.Instance.IsInBattle())
+            {
+                coolingBackgroundImage.fillAmount = Mathf.Lerp(coolingBackgroundImage.fillAmount, coolingBakgroundTargetFillAmount, Time.deltaTime * coolingCountdownSpeed);
+            }
         }
         else
         {
@@ -67,15 +81,20 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
 
     public void UpdateVisual()
     {
-        if (hasExchangedSkill)
+        UpdateCoolingVisual();
+
+        if (BattleManager.Instance.IsInBattle())
         {
-            disableVisualGameObject.SetActive(true);
-        } else
-        {
-            disableVisualGameObject.SetActive(false);
+            if (hasExchangedSkill)
+            {
+                disableVisualGameObject.SetActive(true);
+            }
+            else
+            {
+                disableVisualGameObject.SetActive(false);
+            }
         }
 
-        UpdateCoolingVisual();
     }
 
     private void Player_OnEnterPlayerTurn(object sender, System.EventArgs e)
@@ -103,25 +122,38 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
         coolingCountdownMax = skill.GetCoolingCountdownMax();
 
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
+        if (skill.GetElement() == GameLibrary.Element.Light)
+        {
+            skillText.color = Color.black;
+        }
+        else
+        {
+            skillText.color = Color.white;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (hasExchangedSkill) return;
+        if (hasExchangedSkill && BattleManager.Instance.IsInBattle()) return;
+
+        isOnDrag = true;
 
         rectTransform.anchoredPosition += eventData.delta / scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        List<EquippedSkill> equippedSkillList = battleUI.GetEquippedSkillList();
-        foreach (EquippedSkill equippedSkill in equippedSkillList)
+        isOnDrag = false;
+
+        List<EquippedSkillVisual> equippedSkillList = skillParentUI.GetEquippedSkillList();
+        foreach (EquippedSkillVisual equippedSkill in equippedSkillList)
         {
-            if (Vector3.Distance(transform.position, equippedSkill.transform.position) < rectTransform.rect.height / 2 * scaleFactor && !hasExchangedSkill)
+            if (Vector3.Distance(transform.position, equippedSkill.transform.position) < rectTransform.rect.height / 2 * scaleFactor 
+                && (!hasExchangedSkill || !BattleManager.Instance.IsInBattle()))
             {
                 // ½»»»¼¼ÄÜ
                 Player.Instance.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
-                battleUI.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
+                skillParentUI.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
 
                 int tempCoolingCountdown = coolingCountdown;
                 int tempCoolingCountdownMax = coolingCountdownMax;
@@ -130,7 +162,10 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
                 UpdateCoolingCountdown();
                 equippedSkill.SetCoolingCountdown(tempCoolingCountdown, tempCoolingCountdownMax);
 
-                battleUI.UpdateBackupVisual();
+                if (BattleManager.Instance.IsInBattle())
+                {
+                    skillParentUI.GetTransform().GetComponent<BattleUI>().UpdateBackupVisual();
+                }
             }
         }
 
@@ -144,23 +179,38 @@ public class BackupSkill : MonoBehaviour, IDragHandler, IEndDragHandler, IPointe
 
     private void UpdateCoolingCountdown()
     {
+        Player.Instance.SetBackupSkillCoolingCountdown(index, coolingCountdown);
+
         coolingCountdownText.text = coolingCountdown.ToString();
 
         coolingBakgroundTargetFillAmount = (float)coolingCountdown / coolingCountdownMax;
+
+        if (!BattleManager.Instance.IsInBattle())
+        {
+            coolingBackgroundImage.fillAmount = coolingBakgroundTargetFillAmount;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        originalPos = transform.position;
+        if (!isOnDrag)
+        {
+            originalPos = transform.position;
+        }
 
         if (hasExchangedSkill) return;
+        if (!BattleManager.Instance.IsInBattle()) return;
+        if (isOnDrag) return;
 
         transform.position += Vector3.up * (rectTransform.rect.height / 2) * scaleFactor;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        transform.position = originalPos;
+        if (!isOnDrag)
+        {
+            transform.position = originalPos;
+        }
     }
 
     private void OnDestroy()

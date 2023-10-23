@@ -20,6 +20,13 @@ public class Debuff : MonoBehaviour
     {
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
         TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
+
+        Player.Instance.OnQuitBattle += Player_OnQuitBattle;
+    }
+
+    private void Player_OnQuitBattle(object sender, System.EventArgs e)
+    {
+        DestroySelf();
     }
 
     private void Update()
@@ -33,6 +40,11 @@ public class Debuff : MonoBehaviour
                 ShowVisual();
             }
         }
+    }
+
+    public void SetOwner(ISkillCaster debuffOwner)
+    {
+        this.debuffOwner = debuffOwner;
     }
 
     public void IncreaseCountdown(int increaseAmount)
@@ -108,6 +120,7 @@ public class Debuff : MonoBehaviour
     {
         TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
         TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
+        Player.Instance.OnQuitBattle -= Player_OnQuitBattle;
     }
 
     public void DestroySelf()

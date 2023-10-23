@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BattleUI : MonoBehaviour
+public class BattleUI : MonoBehaviour, ISkillParentUI
 {
     [SerializeField] private Button endTurnButton;
     [SerializeField] private Transform skillButtonContainerTransform;
@@ -11,8 +11,8 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private Transform skillButtonPrefab;
     [SerializeField] private Transform backupSkillPrefab;
 
-    private List<EquippedSkill> equippedSkillList = new List<EquippedSkill>();
-    private List<BackupSkill> backupSkillList = new List<BackupSkill>();
+    private List<EquippedSkillVisual> equippedSkillList = new List<EquippedSkillVisual>();
+    private List<BackupSkillVisual> backupSkillList = new List<BackupSkillVisual>();
 
     private void Awake()
     {
@@ -26,10 +26,14 @@ public class BattleUI : MonoBehaviour
         ShowEquippedSkill();
         ShowBackupSkill();
     }
+    public Transform GetTransform()
+    {
+        return transform;
+    }
 
     public void UpdateBackupVisual()
     {
-        foreach (BackupSkill backupSkill in backupSkillList)
+        foreach (BackupSkillVisual backupSkill in backupSkillList)
         {
             backupSkill.UpdateVisual();
         }
@@ -40,13 +44,13 @@ public class BattleUI : MonoBehaviour
         equippedSkillList[equippedSkillIndex].UpdateSkill();
         backupSkillList[backupSkillIndex].UpdateSkill();
 
-        foreach (BackupSkill backupSkill in backupSkillList)
+        foreach (BackupSkillVisual backupSkill in backupSkillList)
         {
             backupSkill.SetHasExchanged();
         }
     }
 
-    public List<EquippedSkill> GetEquippedSkillList()
+    public List<EquippedSkillVisual> GetEquippedSkillList()
     {
         return equippedSkillList;
     }
@@ -57,7 +61,7 @@ public class BattleUI : MonoBehaviour
         for (int i = 0; i < playerEquippedSkillList.Count; i++)
         {
             Transform skillButtonTransform = Instantiate(skillButtonPrefab, skillButtonContainerTransform);
-            EquippedSkill equippedSkill = skillButtonTransform.GetComponent<EquippedSkill>();
+            EquippedSkillVisual equippedSkill = skillButtonTransform.GetComponent<EquippedSkillVisual>();
             equippedSkillList.Add(equippedSkill);
         }
     }
@@ -68,8 +72,10 @@ public class BattleUI : MonoBehaviour
         for (int i = 0; i < playerBackupSkillList.Count; i++)
         {
             Transform backupSkillTransform = Instantiate(backupSkillPrefab, backupSkillContainerTransform);
-            BackupSkill backupSkill = backupSkillTransform.GetComponent<BackupSkill>();
+            BackupSkillVisual backupSkill = backupSkillTransform.GetComponent<BackupSkillVisual>();
             backupSkillList.Add(backupSkill);
+
+            backupSkill.SetSkillParentUI(this);
         }
     }
 
@@ -89,6 +95,7 @@ public class BattleUI : MonoBehaviour
     private void DestroySelf()
     {
         Player.Instance.OnQuitBattle -= Player_OnQuitBattle;
+
         transform.SetParent(null);
         Destroy(gameObject);
     }

@@ -10,13 +10,13 @@ public class Buff : MonoBehaviour
     [SerializeField] private float buffMakeEffectTimerMax = .5f;   // Buff生效动画的时间
 
     protected ISkillCaster buffOwner;
+    protected int countdown;
 
     private float setBuffTimer;
     private float setBuffTimerMax;
     private bool isSettingBuff = true;
-    private int countdown;
 
-    private void Start()
+    protected virtual void Start()
     {
         if (buffOwner.IsPlayer())
         {
@@ -26,6 +26,13 @@ public class Buff : MonoBehaviour
         {
             TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
         }
+
+        Player.Instance.OnQuitBattle += Player_OnQuitBattle;
+    }
+
+    private void Player_OnQuitBattle(object sender, System.EventArgs e)
+    {
+        DestroySelf();
     }
 
     private void Update()
@@ -67,7 +74,7 @@ public class Buff : MonoBehaviour
         iconGameObject.SetActive(false);
     }
 
-    public void Initialize(ISkillCaster skillCaster, int countdown, float setBuffTimerMax)
+    public virtual void Initialize(ISkillCaster skillCaster, int countdown, float setBuffTimerMax)
     {
         this.countdown = countdown;
         buffOwner = skillCaster;
@@ -78,15 +85,13 @@ public class Buff : MonoBehaviour
         HideVisual();
     }
 
-    private void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
+    protected virtual void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
     {
-        MakeEffect();
         DecreaseCountdown();
     }
 
-    private void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
+    protected virtual void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
     {
-        MakeEffect();
         DecreaseCountdown();
     }
 
@@ -95,20 +100,27 @@ public class Buff : MonoBehaviour
 
     }
 
-    private void DecreaseCountdown()
+    protected void DecreaseCountdown()
     {
         countdown--;
         countdownText.text = countdown.ToString();
+
+        CheckCountdown();
+    }
+
+    protected virtual void CheckCountdown()
+    {
         if (countdown == 0)
         {
             DestroySelf();
         }
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
         TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
+        Player.Instance.OnQuitBattle -= Player_OnQuitBattle;
     }
 
     public void DestroySelf()

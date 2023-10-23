@@ -20,7 +20,7 @@ public class RoomManager : MonoBehaviour
     private void InitializeRoom()
     {
         Room randomRoom = regularRoomList[Random.Range(0, regularRoomList.Count)];
-        Instantiate(randomRoom);
+        Instantiate(randomRoom, transform);
         curRoom = randomRoom;
     }
 

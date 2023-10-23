@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 3
+  isEnemyUnappliable: 1
   thisActionPointExpense: 1
   thisCastTime: 1
   actionPointModifyAmount: 1

@@ -6,6 +6,12 @@ public class Room : MonoBehaviour
 {
     [SerializeField] private Transform playerBattlePosTransform;
     [SerializeField] private Transform enemyBattlePosTransform;
+    [SerializeField] private Transform chestPosTransform;
+
+    public Vector3 GetChestPos()
+    {
+        return chestPosTransform.position;
+    }
 
     public Vector3 GetPlayerBattlePos()
     {
