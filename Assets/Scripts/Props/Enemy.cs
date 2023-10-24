@@ -19,7 +19,6 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private int atk = 100;
     [SerializeField] private int def = 100;
     [SerializeField] GameLibrary.Element element;
-    [SerializeField] private Transform chestPrefab;
 
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
@@ -180,7 +179,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
         int castedSkillIndex = UnityEngine.Random.Range(0, equippedSkillList.Count);
         equippedSkillList[castedSkillIndex].CastSkill(this);
 
-        Debug.Log("Enemy Casted" + equippedSkillList[castedSkillIndex].GetSkillName());
+        Debug.Log("Enemy Casted " + equippedSkillList[castedSkillIndex].GetSkillName());
     }
 
     public Buff SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax)
@@ -390,16 +389,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         Player.Instance.SetLootSkillList(equippedSkillList);
 
-        SpawnChest();
-
         DestroySelf();
-    }
-
-    private void SpawnChest()
-    {
-        Room curRoom = RoomManager.Instance.GetCurRoom();
-        Instantiate(chestPrefab, RoomManager.Instance.transform);
-        chestPrefab.transform.position = curRoom.GetChestPos();
     }
 
     private void Player_OnEnterBattle(object sender, Enemy e)

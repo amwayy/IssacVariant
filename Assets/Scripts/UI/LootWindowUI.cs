@@ -11,6 +11,14 @@ public class LootWindowUI : MonoBehaviour
     private void Start()
     {
         ShowLootSkill();
+
+        Player.Instance.OnEndLoot += Player_OnEndLoot;
+    }
+
+    private void Player_OnEndLoot(object sender, System.EventArgs e)
+    {
+        transform.SetParent(null);
+        Destroy(gameObject);
     }
 
     private void ShowLootSkill()
@@ -27,5 +35,10 @@ public class LootWindowUI : MonoBehaviour
             LootSkillVisual lootSkillVisual = lootSkillTransform.GetComponent<LootSkillVisual>();
             lootSkillVisual.SetSkill(lootSkillList[i]);
         }
+    }
+
+    private void OnDestroy()
+    {
+        Player.Instance.OnEndLoot -= Player_OnEndLoot;
     }
 }

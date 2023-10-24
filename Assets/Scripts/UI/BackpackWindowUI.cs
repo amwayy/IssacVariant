@@ -27,6 +27,11 @@ public class BackpackWindowUI : MonoBehaviour, ISkillParentUI
         }
     }
 
+    public Transform GetBackupSkillsContainerTransform()
+    {
+        return backupSkillContainerTransform;
+    }
+
     public Transform GetTransform()
     {
         return transform;
@@ -37,6 +42,11 @@ public class BackpackWindowUI : MonoBehaviour, ISkillParentUI
         return equippedSkillList;
     }
 
+    public List<BackupSkillVisual> GetBackupSkillList()
+    {
+        return backupSkillList;
+    }
+
     public void UpdateEquippedSkill(int index)
     {
         equippedSkillList[index].UpdateSkill();
@@ -44,7 +54,17 @@ public class BackpackWindowUI : MonoBehaviour, ISkillParentUI
 
     public void UpdatebackupSkill(int index)
     {
-        backupSkillList[index].UpdateSkill();
+        if (index < backupSkillList.Count)
+        {
+            backupSkillList[index].UpdateSkill();
+        } else
+        {
+            Transform newBackupSkillTransform = Instantiate(backupSkillPrefab, backupSkillContainerTransform);
+            BackupSkillVisual backupSkill = newBackupSkillTransform.GetComponent<BackupSkillVisual>();
+            backupSkillList.Add(backupSkill);
+
+            backupSkill.SetSkillParentUI(this);
+        }
     }
 
     public void ExchangeSkill(int equippedSkillIndex, int backupSkillIndex)

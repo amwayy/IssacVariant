@@ -86,7 +86,6 @@ public class EquippedSkillVisual : MonoBehaviour
         }
 
         skill = Player.Instance.GetEquippedSkillList()[equippedSkillIndex];
-        skill = Instantiate(skill, transform);
         skillText.text = skill.GetSkillName();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
 

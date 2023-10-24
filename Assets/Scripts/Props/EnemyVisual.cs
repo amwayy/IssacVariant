@@ -1,39 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
-public class PlayerVisual : MonoBehaviour
+public class EnemyVisual : MonoBehaviour
 {
-    [SerializeField] private Player player;
-    [SerializeField] private Sprite playerFrontVisual;
-    [SerializeField] private Sprite playerBackVisual;
-    [SerializeField] private Sprite playerSideVisual;
+    [SerializeField] private Enemy enemy;
+    [SerializeField] private Sprite enemyFrontVisual;
+    [SerializeField] private Sprite enemyBackVisual;
+    [SerializeField] private Sprite enmeySideVisual;
+    [SerializeField] private GameObject hpUIGameObject;
+    [SerializeField] private Image hpBarImage;
     [SerializeField] private Vector3 visualCenter;
     [SerializeField] private Transform damageVisualPrefab;
     [SerializeField] private Transform statUpVisualPrefab;
     [SerializeField] private float visualRadius;
     [SerializeField] private float showStatChangeVisualOffset = .5f;
-    [SerializeField] private int statChangeVisualCount;
+    [SerializeField] private int statChangeVisualCount = 5;
 
     private const string IS_WALKING = "IsWalking";
 
-    private Animator playerAnimator;
+    private Animator enemyAnimator;
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
-        playerAnimator = GetComponent<Animator>();
+        enemyAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        player.OnTakeDamage += Player_OnTakeDamage;
-        player.OnHeal += Player_OnHeal;
+        hpUIGameObject.SetActive(false);
+
+        enemy.OnTakeDamage += Enemy_OnTakeDamage;
+        enemy.OnHeal += Enemy_OnHeal;
     }
 
-    private void Player_OnHeal(object sender, EventArgs e)
+    private void Enemy_OnHeal(object sender, EventArgs e)
     {
+        UpdateHPBarVisual();
+
         ShowStatChangeVisual(statUpVisualPrefab);
-    }
+    } 
 
     private void ShowStatChangeVisual(Transform stateChangeVisualPrefab)
     {
@@ -51,8 +58,7 @@ public class PlayerVisual : MonoBehaviour
             if (statChangeVisual.GetChangeType() == StatChangeVisual.ChangeType.Buff)
             {
                 centerBias = showStatChangeVisualOffset;
-            }
-            else
+            } else
             {
                 centerBias = -showStatChangeVisualOffset;
             }
@@ -62,15 +68,23 @@ public class PlayerVisual : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Start()
     {
-        playerAnimator.SetBool(IS_WALKING, player.IsWalking());
-
-        UpdateOrientation();
+        Player.Instance.OnEnterBattle += Player_OnEnterBattle;
     }
 
-    private void Player_OnTakeDamage(object sender, int e)
+    private void Player_OnEnterBattle(object sender, Enemy e)
     {
+        if (e == enemy)
+        {
+            hpUIGameObject.SetActive(true);
+        }
+    }
+
+    private void Enemy_OnTakeDamage(object sender, int e)
+    {
+        UpdateHPBarVisual();
+
         Transform damageVisualTransform = Instantiate(damageVisualPrefab, transform);
         damageVisualTransform.GetComponent<DamageVisual>().SetDamage(e);
         int randomAngle = UnityEngine.Random.Range(0, 180);
@@ -79,24 +93,42 @@ public class PlayerVisual : MonoBehaviour
             visualCenter.y + visualRadius * (float)Math.Sin(randomRadian), 0);
     }
 
+    private void UpdateHPBarVisual()
+    {
+        float hpPercentage = ((float)enemy.GetHPAmount()) / enemy.GetHPMaxAmount();
+        hpBarImage.fillAmount = hpPercentage;
+    }
+
+    private void Update()
+    {
+        enemyAnimator.SetBool(IS_WALKING, enemy.IsWalking());
+
+        UpdateOrientation();
+    }
+
+    private void OnDestroy()
+    {
+        Player.Instance.OnEnterBattle -= Player_OnEnterBattle;
+    }
+
     private void UpdateOrientation()
     {
-        switch (player.GetPlayerOrientation())
+        switch (enemy.GetEnemyOrientation())
         {
-            case Player.Orientation.Front:
-                spriteRenderer.sprite = playerFrontVisual;
+            case Enemy.Orientation.Front:
+                spriteRenderer.sprite = enemyFrontVisual;
                 transform.localScale = Vector3.one;
                 break;
-            case Player.Orientation.Back:
-                spriteRenderer.sprite = playerBackVisual;
+            case Enemy.Orientation.Back:
+                spriteRenderer.sprite = enemyBackVisual;
                 transform.localScale = Vector3.one;
                 break;
-            case Player.Orientation.Left:
-                spriteRenderer.sprite = playerSideVisual;
+            case Enemy.Orientation.Left:
+                spriteRenderer.sprite = enmeySideVisual;
                 transform.localScale = Vector3.one;
                 break;
-            case Player.Orientation.Right:
-                spriteRenderer.sprite = playerSideVisual;
+            case Enemy.Orientation.Right:
+                spriteRenderer.sprite = enmeySideVisual;
                 transform.localScale = new Vector3(-1, 1, 1);
                 break;
         }

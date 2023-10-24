@@ -11,9 +11,17 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnPosYMin = -4.8f;
     [SerializeField] private float distanceAwayFromPlayer = 2.4f;
 
-    private void Awake()
+    private void Start()
     {
-        SpawnEnemies();
+        RoomManager.Instance.OnEnterNewRoom += RoomManager_OnEnterNewRoom;
+    }
+
+    private void RoomManager_OnEnterNewRoom(object sender, System.EventArgs e)
+    {
+        if (RoomManager.Instance.GetCurRoom().GetRoomType() == RoomManager.RoomType.Regular)
+        {
+            SpawnEnemies();
+        }
     }
 
     private void SpawnEnemies()

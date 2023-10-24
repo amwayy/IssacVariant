@@ -59,6 +59,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2151240641716163778, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enemyBackVisual
+      value: 
+      objectReference: {fileID: 21300000, guid: 7cb97abbcb028c848aaff23fbc51a795, type: 3}
+    - target: {fileID: 2151240641716163778, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enmeySideVisual
+      value: 
+      objectReference: {fileID: 21300000, guid: 7cb97abbcb028c848aaff23fbc51a795, type: 3}
+    - target: {fileID: 2151240641716163778, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enemyFrontVisual
+      value: 
+      objectReference: {fileID: 21300000, guid: 7cb97abbcb028c848aaff23fbc51a795, type: 3}
+    - target: {fileID: 2151240641716163788, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457274, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Size.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7cb97abbcb028c848aaff23fbc51a795, type: 3}
     - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
       propertyPath: m_Color.b
       value: 0.99215686

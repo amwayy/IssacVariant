@@ -17,6 +17,9 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private Transform buffContainerTransform;
     [SerializeField] private int atk = 100;
     [SerializeField] private int def = 100;
+    [SerializeField] private Transform equippedSkillsTransform;
+    [SerializeField] private Transform backupSkillsTransform;
+    [SerializeField] private Transform lootSkillsTransform;
 
     public static Player Instance { get; private set; }
 
@@ -29,6 +32,8 @@ public class Player : MonoBehaviour, ISkillCaster
     public event EventHandler<int> OnModifyActionPoint;
     public event EventHandler<int> OnCheckShield;
     public event EventHandler OnEndCastSkill;
+    public event EventHandler OnEndLoot;
+    public event EventHandler<GameLibrary.Element> OnChangeElement;
 
     public enum Orientation
     {
@@ -75,6 +80,7 @@ public class Player : MonoBehaviour, ISkillCaster
     private List<int> equippedSkillCoolingCountdownList = new List<int>();
     private List<int> backupSkillCoolingCountdownList = new List<int>();
     private List<Skill> lootSkillList = new List<Skill>();
+    private GameLibrary.Element element;
 
     private void Awake()
     {
@@ -102,8 +108,7 @@ public class Player : MonoBehaviour, ISkillCaster
     private void Start()
     {
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
-
-        InitializeSkill();
+        RoomManager.Instance.OnEnterNewRoom += RoomManager_OnEnterNewRoom;
     }
 
     private void Update()
@@ -124,11 +129,35 @@ public class Player : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
-    public void SetEquippedSkill(int index, Skill skill)
+    public void SetElement(GameLibrary.Element element)
     {
-        if (index >= equippedSkillList.Count) return;
+        this.element = element;
+        OnChangeElement?.Invoke(this, element);
 
-        equippedSkillList[index] = skill;
+        InitializeSkill();
+    }
+
+    private void RoomManager_OnEnterNewRoom(object sender, EventArgs e)
+    {
+        transform.position = RoomManager.Instance.GetCurRoom().GetPlayerInitialPos();
+    }
+
+    public int GetBackupSkillCountMax()
+    {
+        return backupSkillCountMax;
+    }
+
+    public void EndLoot()
+    {
+        foreach (Skill skill in lootSkillList)
+        {
+            skill.transform.SetParent(null);
+            Destroy(skill.gameObject);
+        }
+
+        lootSkillList.Clear();
+
+        OnEndLoot?.Invoke(this, EventArgs.Empty);
     }
 
     public void SetBackupSkill(int index, Skill skill)
@@ -149,6 +178,7 @@ public class Player : MonoBehaviour, ISkillCaster
 
         foreach (Skill skill in lootSkillList)
         {
+            skill.transform.SetParent(lootSkillsTransform);
             this.lootSkillList.Add(skill);
         }
     }
@@ -219,12 +249,53 @@ public class Player : MonoBehaviour, ISkillCaster
         attackModifyAmount = modifyAmount;
     }
 
-    public void ExchangeSkill(int equippedSkillIndex, int backupSkillIndex)
+    public void ExchangeEquippedLootSkill(int equippedSkillIndex, int lootSkillIndex)
+    {
+        Skill equippedSkillToExchange = equippedSkillList[equippedSkillIndex];
+        Skill lootSkillToExchange = lootSkillList[lootSkillIndex];
+        equippedSkillList[equippedSkillIndex] = lootSkillToExchange;
+        lootSkillList[lootSkillIndex] = equippedSkillToExchange;
+
+        equippedSkillToExchange.transform.SetParent(lootSkillsTransform);
+        equippedSkillToExchange.transform.SetSiblingIndex(lootSkillIndex);
+        lootSkillToExchange.transform.SetParent(equippedSkillsTransform);
+        lootSkillToExchange.transform.SetSiblingIndex(equippedSkillIndex);
+    }
+
+    public void ExchangeBackupLootSkill(int backupSkillIndex, int lootSkillIndex)
+    {
+        if (backupSkillIndex < backUpSkillList.Count)
+        {
+            Skill backupSkillToExchange = backUpSkillList[backupSkillIndex];
+            Skill lootSkillToExchange = lootSkillList[lootSkillIndex];
+            backUpSkillList[backupSkillIndex] = lootSkillToExchange;
+            lootSkillList[lootSkillIndex] = backupSkillToExchange;
+
+            backupSkillToExchange.transform.SetParent(lootSkillsTransform);
+            backupSkillToExchange.transform.SetSiblingIndex(lootSkillIndex);
+            lootSkillToExchange.transform.SetParent(backupSkillsTransform);
+            lootSkillToExchange.transform.SetSiblingIndex(backupSkillIndex);
+        } else
+        {
+            Skill lootSkillToExchange = lootSkillList[lootSkillIndex];
+            backUpSkillList.Add(lootSkillToExchange);
+
+            lootSkillToExchange.transform.SetParent(backupSkillsTransform);
+            lootSkillToExchange.transform.SetSiblingIndex(backupSkillIndex);
+        }
+    }
+
+    public void ExchangeEquippedBackupSkill(int equippedSkillIndex, int backupSkillIndex)
     {
         Skill equippedSkillToExchange = equippedSkillList[equippedSkillIndex];
         Skill backupSkillToExchange = backUpSkillList[backupSkillIndex];
         equippedSkillList[equippedSkillIndex] = backupSkillToExchange;
         backUpSkillList[backupSkillIndex] = equippedSkillToExchange;
+
+        equippedSkillToExchange.transform.SetParent(backupSkillsTransform);
+        equippedSkillToExchange.transform.SetSiblingIndex(backupSkillIndex);
+        backupSkillToExchange.transform.SetParent(equippedSkillsTransform);
+        backupSkillToExchange.transform.SetSiblingIndex(equippedSkillIndex);
     }
 
     public List<Skill> GetBackupSkillList()
@@ -330,17 +401,39 @@ public class Player : MonoBehaviour, ISkillCaster
         // 初期开发设定
 
         // player携带全部技能列表的后4个（方便测试最新技能）
-        List<Skill> allSkillList = GameLibrary.Instance.GetAllSkillList();
+        List<Skill> skillList = new List<Skill>();
+        switch(element)
+        {
+            case GameLibrary.Element.Grass:
+                skillList = GameLibrary.Instance.GetElementSkillList(GameLibrary.Element.Grass);
+                break;
+            case GameLibrary.Element.Fire:
+                skillList = GameLibrary.Instance.GetElementSkillList(GameLibrary.Element.Fire);
+                break;
+            case GameLibrary.Element.Water:
+                skillList = GameLibrary.Instance.GetElementSkillList(GameLibrary.Element.Water);
+                break;
+            case GameLibrary.Element.Light:
+                skillList = GameLibrary.Instance.GetElementSkillList(GameLibrary.Element.Light);
+                break;
+            case GameLibrary.Element.Dark:
+                skillList = GameLibrary.Instance.GetElementSkillList(GameLibrary.Element.Dark);
+                break;
+        }
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
-            equippedSkillList.Add(allSkillList[allSkillList.Count - 1 - i]);
+            Skill equippedSkill = Instantiate(skillList[skillList.Count - 1 - i], equippedSkillsTransform);
+            equippedSkillList.Add(equippedSkill);
         }
 
-        // 剩下的技能加入背包
+        // 把所有技能中的前几个放到背包里
+        List<Skill> allSkillList = GameLibrary.Instance.GetAllSkillList();
         int backupSkillCount = Math.Min(allSkillList.Count - equippedSkillCountMax, backupSkillCountMax);
+        // int backupSkillCount = 6;
         for (int i = 0; i < backupSkillCount; i++)
         {
-            backUpSkillList.Add(allSkillList[i]);
+            Skill backupSkill = Instantiate(allSkillList[i], backupSkillsTransform);
+            backUpSkillList.Add(backupSkill);
         }
     }
 

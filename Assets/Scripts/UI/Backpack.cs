@@ -33,10 +33,16 @@ public class Backpack : MonoBehaviour
     public void OpenClose()
     {
         bool isWindowShown = false;
+        // Close
         foreach (Transform child in transform)
         {
             if (child.TryGetComponent(out BackpackWindowUI backpackWindowUI))
             {
+                if (Player.Instance.GetLootSkillList().Count > 0)
+                {
+                    Player.Instance.EndLoot();
+                }
+
                 isWindowShown = true;
                 backpackWindowUI.DestroySelf();
                 backpackWindowTransform = null;
@@ -45,6 +51,7 @@ public class Backpack : MonoBehaviour
             }
         }
 
+        // Open
         if (!isWindowShown)
         {
             backpackWindowTransform = Instantiate(backupWindowPrefab, transform);

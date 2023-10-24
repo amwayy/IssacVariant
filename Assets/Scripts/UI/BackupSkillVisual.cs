@@ -58,6 +58,13 @@ public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, I
         UpdateVisual();
     }
 
+    public void SetCoolingCountdown(int countdown, int countdownMax)
+    {
+        coolingCountdown = countdown;
+        coolingCountdownMax = countdownMax;
+        UpdateCoolingCountdown();
+    }
+
     public void SetSkillParentUI(ISkillParentUI skillParentUI)
     {
         this.skillParentUI = skillParentUI;
@@ -152,7 +159,7 @@ public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, I
                 && (!hasExchangedSkill || !BattleManager.Instance.IsInBattle()))
             {
                 // ½»»»¼¼ÄÜ
-                Player.Instance.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
+                Player.Instance.ExchangeEquippedBackupSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
                 skillParentUI.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
 
                 int tempCoolingCountdown = coolingCountdown;

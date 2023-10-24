@@ -14,12 +14,15 @@ public class LootSkillVisual : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private RectTransform rectTransform;
     private float scaleFactor;
     private BackpackWindowUI backpackWindowUI;
+    private int lootIndex;
 
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
 
         scaleFactor = Screen.height / 1080f;
+
+        lootIndex = transform.GetSiblingIndex();
     }
 
     private void Start()
@@ -62,19 +65,56 @@ public class LootSkillVisual : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 // 交换技能
                 Skill tempEquippedSkill = Player.Instance.GetEquippedSkillList()[i];
-                Player.Instance.SetEquippedSkill(i, skill);
-
-                foreach (Skill skill in Player.Instance.GetEquippedSkillList())
-                {
-                    Debug.Log(skill.GetSkillName());
-                }
-
+                Player.Instance.ExchangeEquippedLootSkill(i, lootIndex);
                 backpackWindowUI.UpdateEquippedSkill(i);
+
                 skill = tempEquippedSkill;
                 SetSkill(skill);
-
                 equippedSkillVisual.SetCoolingCountdown(0, skill.GetCoolingCountdownMax());
+
+                Player.Instance.EndLoot();
+                transform.position = originalPos;
+                return;
             }
+        }
+
+        List<BackupSkillVisual> backupSkillList = backpackWindowUI.GetBackupSkillList();
+        for (int i = 0; i < backupSkillList.Count; i++)
+        {
+            BackupSkillVisual backupSkillVisual = backupSkillList[i];
+            if (Vector3.Distance(transform.position, backupSkillVisual.transform.position) < rectTransform.rect.height / 2 * scaleFactor)
+            {
+                // 交换技能
+                Skill tempEquippedSkill = Player.Instance.GetBackupSkillList()[i];
+                Player.Instance.ExchangeBackupLootSkill(i, lootIndex);
+                backpackWindowUI.UpdatebackupSkill(i);
+
+                skill = tempEquippedSkill;
+                SetSkill(skill);
+                backupSkillVisual.SetCoolingCountdown(0, skill.GetCoolingCountdownMax());
+
+                Player.Instance.EndLoot();
+                transform.position = originalPos;
+                return;
+            }
+        }
+
+        Transform backupSkillsContainerTransform = backpackWindowUI.GetBackupSkillsContainerTransform();
+        RectTransform backupSkillsContainerRectTransform = backupSkillsContainerTransform.GetComponent<RectTransform>();
+        if (Player.Instance.GetBackupSkillList().Count < Player.Instance.GetBackupSkillCountMax()
+            && Mathf.Abs(transform.position.x - backupSkillsContainerTransform.position.x) < backupSkillsContainerRectTransform.rect.width / 2 
+            && Mathf.Abs(transform.position.y - backupSkillsContainerTransform.position.y) < backupSkillsContainerRectTransform.rect.height / 2)
+        {
+            // 交换技能
+            int newBackupSkillIndex = Player.Instance.GetBackupSkillList().Count;
+            Player.Instance.ExchangeBackupLootSkill(newBackupSkillIndex, lootIndex);
+            backpackWindowUI.UpdatebackupSkill(newBackupSkillIndex);
+
+            backpackWindowUI.GetBackupSkillList()[backpackWindowUI.GetBackupSkillList().Count - 1].SetCoolingCountdown(0, skill.GetCoolingCountdownMax());
+
+            Player.Instance.EndLoot();
+            transform.position = originalPos;
+            return;
         }
 
         transform.position = originalPos;
