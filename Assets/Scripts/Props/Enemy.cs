@@ -24,6 +24,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     public event EventHandler OnHeal;
     public event EventHandler<int> OnCheckShield;
     public event EventHandler OnEndCastSkill;
+    public event EventHandler OnAttackReady;
 
     public enum Orientation
     {
@@ -97,6 +98,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public void AppendDamage(int damageAmount)
+    {
+        attackDamageMin += damageAmount;
+        attackDamageMax += damageAmount;
     }
 
     public void SetDamageTaken(int modifiedDamage)
@@ -269,6 +276,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
         this.isRealDamage = isRealDamage;
+
+        OnAttackReady?.Invoke(this, EventArgs.Empty);
     }
 
     private void TryAttack()

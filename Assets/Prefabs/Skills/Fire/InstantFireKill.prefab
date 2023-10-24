@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8802115781196531698}
   - component: {fileID: 5736546557770294889}
   m_Layer: 0
-  m_Name: FireAttack3
+  m_Name: InstantFireKill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6305d26184cf0b4f8a93679f2569b2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  element: 1
+  isEnemyUnappliable: 0
   thisActionPointExpense: 1
   damageMin: 95
   damageMax: 85

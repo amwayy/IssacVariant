@@ -44,3 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba0d7f391e1f1214fb11b5d2c40c81df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  element: 0
+  isEnemyUnappliable: 0
+  thisActionPointExpense: 1
+  thisCastTime: 1
+  healPercentage: 0.35

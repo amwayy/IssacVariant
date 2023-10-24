@@ -34,6 +34,7 @@ public class Player : MonoBehaviour, ISkillCaster
     public event EventHandler OnEndCastSkill;
     public event EventHandler OnEndLoot;
     public event EventHandler<GameLibrary.Element> OnChangeElement;
+    public event EventHandler OnAttackReady;
 
     public enum Orientation
     {
@@ -81,6 +82,8 @@ public class Player : MonoBehaviour, ISkillCaster
     private List<int> backupSkillCoolingCountdownList = new List<int>();
     private List<Skill> lootSkillList = new List<Skill>();
     private GameLibrary.Element element;
+    private int atkBeforeBattle;
+    private int defBeforeBattle;
 
     private void Awake()
     {
@@ -127,6 +130,12 @@ public class Player : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public void AppendDamage(int damageAmount)
+    {
+        attackDamageMin += damageAmount;
+        attackDamageMax += damageAmount;
     }
 
     public void SetElement(GameLibrary.Element element)
@@ -244,6 +253,7 @@ public class Player : MonoBehaviour, ISkillCaster
         this.def = def;
     }
 
+    // 连段攻击时，之后的攻击伤害会被修改
     public void SetAttackModify(int modifyAmount)
     {
         attackModifyAmount = modifyAmount;
@@ -569,6 +579,8 @@ public class Player : MonoBehaviour, ISkillCaster
         this.attackCount = attackCount;
         attackModifyAmount = 0;
         this.isRealDamage = isRealDamage;
+
+        OnAttackReady?.Invoke(this, EventArgs.Empty);
     }
 
     private void TryAttack()
@@ -589,6 +601,10 @@ public class Player : MonoBehaviour, ISkillCaster
                 if (battlingEnemy.GetHPAmount() == 0)
                 {
                     attackCount = 1;
+
+                    atk = atkBeforeBattle;
+                    def = defBeforeBattle;
+
                     OnQuitBattle?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -691,10 +707,32 @@ public class Player : MonoBehaviour, ISkillCaster
         moveDir.Normalize();
     }
 
+    private void ResetStat()
+    {
+        atkBeforeBattle = atk;
+        defBeforeBattle = def;
+
+        ModifyActionPointMax(defaultActionPointMaxCount - actionPointMaxCount);
+        availableActionPointCount = actionPointMaxCount;
+
+        isAttacking = false;
+        isEndingAttack = false;
+        isCastingSkill = false;
+        isDebuffMakingEffect = false;
+        isImprisoned = false;
+        attackSpeed = DEFAULT_ATTACK_SPEED;
+        attackCount = 0;
+        attackModifyAmount = 0;
+        battlingEnemy = null;
+        isRealDamage = false;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.TryGetComponent(out Enemy enemy) && !BattleManager.Instance.IsInBattle())
         {
+            ResetStat();
+
             OnEnterBattle?.Invoke(this, enemy);
             battlePosition = RoomManager.Instance.GetCurRoom().GetPlayerBattlePos();
             enemyBattlePosition = RoomManager.Instance.GetCurRoom().GetEnemyBattlePos() + attackPosBias;

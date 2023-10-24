@@ -30,11 +30,11 @@ public class SharpLeaf : Skill
         float randomNum = (float) random.NextDouble();
         if (randomNum <= bleedProbability)
         {
-            SetBloodDebuff();
+            SetBleedDebuff();
         }
     }
 
-    private void SetBloodDebuff()
+    private void SetBleedDebuff()
     {
         bool isInBleed = false;
         Bleed bleed = null;

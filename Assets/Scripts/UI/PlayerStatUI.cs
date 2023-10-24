@@ -57,6 +57,7 @@ public class PlayerStatUI : MonoBehaviour
     private void Player_OnEnterBattle(object sender, Enemy e)
     {
         actionPointContainerTransform.gameObject.SetActive(true);
+        UpdateActionPointVisual();
     }
 
     private void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)

@@ -10,8 +10,12 @@ public interface ISkillCaster
     public event EventHandler<int> OnCheckShield;   // 传递伤害值
     public event EventHandler OnEndCastSkill;
     public event EventHandler<int> OnTakeDamage;
+    public event EventHandler OnAttackReady;
 
     public void SetDamageTaken(int modifiedDamage);
+
+    // 追加攻击
+    public void AppendDamage(int damageAmount);
 
     // 按百分比修改攻击力
     public void SetATK(int atk);

@@ -8,7 +8,7 @@ public class PitchBlack : Skill
     [SerializeField] private int atkUpCountdownMax = 1;
     [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float setBuffTimerMax = .5f;   // 设定Debuff的缓冲时间
-    [SerializeField] private Transform atkUpDebuffPrefab;
+    [SerializeField] private Transform atkUpBuffPrefab;
     [SerializeField] private float atkUpPercentage = .2f;
 
     private void Awake()
@@ -65,8 +65,14 @@ public class PitchBlack : Skill
         }
         else
         {
-            Buff buff = skillCaster.SetBuff(atkUpDebuffPrefab, atkUpCountdownMax, setBuffTimerMax);
+            Buff buff = skillCaster.SetBuff(atkUpBuffPrefab, atkUpCountdownMax, setBuffTimerMax);
             buff.GetComponent<AtkUp>().SetAtkUpPercentage(atkUpPercentage);
         }
+    }
+
+    private void OnDestroy()
+    {
+        TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
+        TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
     }
 }

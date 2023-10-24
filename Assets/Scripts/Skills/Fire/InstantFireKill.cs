@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FireAttack3 : Skill
+public class InstantFireKill : Skill
 {
     //¹¥»÷Á¦=90 ;·ÀÓùÁ¦=40 ; ÑªÁ¿=50
     [SerializeField] private int thisActionPointExpense = 1;
@@ -12,7 +12,7 @@ public class FireAttack3 : Skill
 
     private void Awake()
     {
-        skillName = "Fire Attack3";
+        skillName = "Instant Fire Kill";   // Ë²Ñ×É±
         actionPointExpense = thisActionPointExpense;
         castTime = thisCastTime;
     }
