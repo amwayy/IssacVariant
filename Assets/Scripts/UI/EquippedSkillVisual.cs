@@ -11,6 +11,7 @@ public class EquippedSkillVisual : MonoBehaviour
     [SerializeField] private GameObject coolingVisualGameObject;
     [SerializeField] private Image coolingBackgroundImage;
     [SerializeField] private float coolingCountdownSpeed = 5f;
+    [SerializeField] private TextMeshProUGUI skillDescriptionText;
 
     private const float EPISILON = .05f;
 
@@ -87,6 +88,7 @@ public class EquippedSkillVisual : MonoBehaviour
 
         skill = Player.Instance.GetEquippedSkillList()[equippedSkillIndex];
         skillText.text = skill.GetSkillName();
+        skillDescriptionText.text = skill.GetSkillDescription();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
 
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());

@@ -4,22 +4,13 @@ using UnityEngine;
 
 public class StreamShoot : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 1;
-    [SerializeField] private int damageMin = 65;
-    [SerializeField] private int damageMax = 75;
-    [SerializeField] private float thisCastTime = 1f;
-
-    private void Awake()
-    {
-        skillName = "Stream Shoot";
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
+    [SerializeField] private int baseDamage = 70;
+    [SerializeField] private int damageDelta = 5;
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
         base.CastSkill(skillCaster);
 
-        skillCaster.SetAttack(damageMin, damageMax);
+        skillCaster.SetAttack(baseDamage - damageDelta, baseDamage + damageDelta);
     }
 }

@@ -48,6 +48,11 @@ public class Buff : MonoBehaviour
         }
     }
 
+    public void SetOwner(ISkillCaster buffOwner)
+    {
+        this.buffOwner = buffOwner;
+    }
+
     public void IncreaseCountdown(int increaseAmount)
     {
         isSettingBuff = true;
@@ -126,6 +131,9 @@ public class Buff : MonoBehaviour
     public void DestroySelf()
     {
         transform.SetParent(null);
+
+        buffOwner.UpdateStatContainer();
+
         Destroy(gameObject);
     }
 }

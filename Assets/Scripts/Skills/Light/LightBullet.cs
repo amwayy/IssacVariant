@@ -4,22 +4,13 @@ using UnityEngine;
 
 public class LightBullet : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 1;
-    [SerializeField] private int damageMin = 55;
-    [SerializeField] private int damageMax = 65;
-    [SerializeField] private float thisCastTime = 1f;
-
-    private void Awake()
-    {
-        skillName = "Light Bullet";
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
+    [SerializeField] private int baseDamage = 60;
+    [SerializeField] private int damageDelta = 5;
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
         base.CastSkill(skillCaster);
 
-        skillCaster.SetAttack(damageMin, damageMax);
+        skillCaster.SetAttack(baseDamage - damageDelta, baseDamage + damageDelta);
     }
 }

@@ -45,10 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 2
-  thisActionPointExpense: 2
+  isEnemyUnappliable: 0
+  skillTypeList: 01000000
+  skillName: "\u6C34\u6D41\u62A4\u4F53"
+  skillDescription: "\u53D7\u5230\u7684\u4F24\u5BB3\u51CF\u5C1130%\uFF0C\u6301\u7EED2\u56DE\u5408"
+  actionPointExpense: 2
+  coolingCountdownMax: 1
+  castTime: 1
   waterShieldCountdownMax: 2
-  damageMin: 65
-  damageMax: 75
-  thisCastTime: 1
   setBuffTimerMax: 0.5
   waterShieldBuffPrefab: {fileID: 2463174454272902535, guid: f5a7b8fe51f147c478847f5881caf642, type: 3}

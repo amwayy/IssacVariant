@@ -44,8 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5732898c0a9082a4cad6c9ceabce54c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thisActionPointExpense: 3
+  element: 0
+  isEnemyUnappliable: 0
+  skillTypeList: 01000000
+  skillName: "\u7CBE\u534E\u62A4\u4F53"
+  skillDescription: "\u4E0B2\u56DE\u5408\u4F24\u5BB3\u51CF\u534A"
+  actionPointExpense: 3
+  coolingCountdownMax: 1
+  castTime: 1
   halfShieldCountdownMax: 2
-  thisCastTime: 1
   setBuffTimerMax: 0.5
   halfShieldBuffPrefab: {fileID: 2463174454272902535, guid: 2928fbf9c6058514183aa61c484d7e40, type: 3}

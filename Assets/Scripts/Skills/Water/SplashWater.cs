@@ -4,27 +4,18 @@ using UnityEngine;
 
 public class SplashWater : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 1;
-    [SerializeField] private int damageMin = 45;
-    [SerializeField] private int damageMax = 55;
+    [SerializeField] private int baseDamage = 50;
+    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int atkDownCountdownMax = 2;
-    [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform atkDownDebuffPrefab;
     [SerializeField] private float atkDownPercentage = .1f;
-
-    private void Awake()
-    {
-        skillName = "Splash Water";
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
         base.CastSkill(skillCaster);
 
-        skillCaster.SetAttack(damageMin, damageMax);
+        skillCaster.SetAttack(baseDamage - damageDelta, baseDamage + damageDelta);
 
         SetAtkDownDebuff();
     }

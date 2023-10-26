@@ -46,9 +46,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   element: 2
   isEnemyUnappliable: 0
+  skillTypeList: 0000000002000000
+  skillName: "\u6D12\u6C34"
+  skillDescription: "\u4F7F\u5BF9\u65B9\u653B\u51FB\u529B\u4E0B\u964D10%\uFF0C\u6301\u7EED2\u56DE\u5408"
   thisActionPointExpense: 1
-  damageMin: 45
-  damageMax: 55
+  baseDamage: 50
+  damageDelta: 5
   atkDownCountdownMax: 2
   thisCastTime: 1
   setDebuffTimerMax: 0.5

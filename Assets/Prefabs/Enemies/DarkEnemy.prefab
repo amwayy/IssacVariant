@@ -11,6 +11,14 @@ PrefabInstance:
       propertyPath: element
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2151240641143420228, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enemyWidth
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2151240641143420228, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enemyHeight
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2151240641143420231, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
       propertyPath: m_Name
       value: DarkEnemy
@@ -59,6 +67,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2151240641716163778, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enemyBackVisual
+      value: 
+      objectReference: {fileID: 21300000, guid: bd756fb2ff0646d4fbbfa9b3a1993e7a, type: 3}
+    - target: {fileID: 2151240641716163778, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enmeySideVisual
+      value: 
+      objectReference: {fileID: 21300000, guid: bd756fb2ff0646d4fbbfa9b3a1993e7a, type: 3}
+    - target: {fileID: 2151240641716163778, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: enemyFrontVisual
+      value: 
+      objectReference: {fileID: 21300000, guid: bd756fb2ff0646d4fbbfa9b3a1993e7a, type: 3}
+    - target: {fileID: 2151240641716163788, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457274, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Size.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Size.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bd756fb2ff0646d4fbbfa9b3a1993e7a, type: 3}
     - target: {fileID: 6034824983353457275, guid: 3e7f5959531fb2a40b2351199b5767d3, type: 3}
       propertyPath: m_Color.b
       value: 0.7106671

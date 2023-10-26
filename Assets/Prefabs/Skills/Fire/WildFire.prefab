@@ -46,7 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   element: 1
   isEnemyUnappliable: 0
-  thisActionPointExpense: 1
-  damageMin: 65
-  damageMax: 75
-  thisCastTime: 1
+  skillTypeList: 00000000
+  skillName: "\u8352\u706B"
+  skillDescription: 
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
+  baseDamage: 70
+  damageDelta: 5

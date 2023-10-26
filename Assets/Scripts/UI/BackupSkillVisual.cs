@@ -13,6 +13,7 @@ public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, I
     [SerializeField] private GameObject coolingVisualGameObject;
     [SerializeField] private Image coolingBackgroundImage;
     [SerializeField] private float coolingCountdownSpeed = 5f;
+    [SerializeField] private TextMeshProUGUI skillDescriptionText;
 
     private const float EPISILON = .05f;
 
@@ -126,6 +127,7 @@ public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, I
         skill = Player.Instance.GetBackupSkillList()[backupSkillIndex];
         skill = Instantiate(skill, transform);
         skillText.text = skill.GetSkillName();
+        skillDescriptionText.text = skill.GetSkillDescription();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
 
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());

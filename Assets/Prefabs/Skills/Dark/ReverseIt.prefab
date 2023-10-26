@@ -46,3 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   element: 4
   isEnemyUnappliable: 0
+  skillTypeList: 01000000
+  skillName: "\u9006\u8F6C\u4E7E\u5764"
+  skillDescription: "\u8F6C\u79FB\u81EA\u8EAB\u8D1F\u9762\u6548\u679C\u7ED9\u5BF9\u65B9"
+  actionPointExpense: 2
+  coolingCountdownMax: 1
+  castTime: 1

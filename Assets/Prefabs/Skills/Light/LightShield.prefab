@@ -45,9 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 3
-  isEnemyAppliable: 0
-  thisActionPointExpense: 2
+  isEnemyUnappliable: 0
+  skillTypeList: 01000000
+  skillName: "\u5149\u4E4B\u76FE"
+  skillDescription: "\u4E0B\u56DE\u5408\u53D7\u5230\u7684\u4F24\u5BB350%\u53CD\u5F39\u7ED9\u5BF9\u65B9"
+  actionPointExpense: 2
+  coolingCountdownMax: 1
+  castTime: 1
   lightShieldCountdownMax: 1
-  thisCastTime: 1
   setBuffTimerMax: 0.5
   lightShieldBuffPrefab: {fileID: 2463174454272902535, guid: 8f90299b99e217b43b5de1ee68ab9bf9, type: 3}

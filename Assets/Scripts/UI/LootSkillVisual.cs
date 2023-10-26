@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class LootSkillVisual : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private TextMeshProUGUI skillText;
+    [SerializeField] private TextMeshProUGUI skillDescriptionText;
 
     private Skill skill;
     private Vector3 originalPos;
@@ -34,6 +35,7 @@ public class LootSkillVisual : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         this.skill = skill;
         skillText.text = skill.GetSkillName();
+        skillDescriptionText.text = skill.GetSkillDescription();
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
         if (skill.GetElement() == GameLibrary.Element.Light)
         {

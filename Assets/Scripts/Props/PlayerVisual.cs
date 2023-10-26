@@ -27,7 +27,7 @@ public class PlayerVisual : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         player.OnTakeDamage += Player_OnTakeDamage;
-        player.OnHeal += Player_OnHeal;
+        player.OnEndHeal += Player_OnHeal;
         player.OnChangeElement += Player_OnChangeElement;
     }
 

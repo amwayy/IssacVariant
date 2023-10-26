@@ -33,6 +33,12 @@ public class EnemyVisual : MonoBehaviour
 
         enemy.OnTakeDamage += Enemy_OnTakeDamage;
         enemy.OnHeal += Enemy_OnHeal;
+        enemy.OnHPMaxModified += Enemy_OnHPMaxModified;
+    }
+
+    private void Enemy_OnHPMaxModified(object sender, EventArgs e)
+    {
+        UpdateHPBarVisual();
     }
 
     private void Enemy_OnHeal(object sender, EventArgs e)

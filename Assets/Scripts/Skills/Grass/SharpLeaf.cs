@@ -4,27 +4,18 @@ using UnityEngine;
 
 public class SharpLeaf : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 1;
-    [SerializeField] private int damageMin = 70;
-    [SerializeField] private int damageMax = 80;
+    [SerializeField] private int baseDamage = 75;
+    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int bleedCountdownMax = 4;
-    [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float bleedProbability = .2f;
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform bleedDebuffPrefab;
-
-    private void Awake()
-    {
-        skillName = "Sharp Leaf";
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
         base.CastSkill(skillCaster);
 
-        skillCaster.SetAttack(damageMin, damageMax);
+        skillCaster.SetAttack(baseDamage - damageDelta, baseDamage + damageDelta);
 
         System.Random random = new System.Random();
         float randomNum = (float) random.NextDouble();

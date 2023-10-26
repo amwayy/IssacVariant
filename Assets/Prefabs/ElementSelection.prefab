@@ -72,6 +72,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 967ec74300e4b324795d856f7496e107, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  element: 0
+  grassPropertyPrefab: {fileID: 1429055087150607628, guid: ff704c2dc846a1f4fb691549a18f3a68, type: 3}
+  firePropertyPrefab: {fileID: 1429055087150607628, guid: 01b8ba97b7bdf114a83090f84249a339, type: 3}
+  waterPropertyPrefab: {fileID: 1429055087150607628, guid: cb2e12065fa1576488674818abb9adda, type: 3}
+  lightPropertyPrefab: {fileID: 1429055087150607628, guid: 49c36cae7fa25fc4b8df7ef3e44e8aca, type: 3}
+  darkPropertyPrefab: {fileID: 1429055087150607628, guid: bfd8af4b441ddda4b9975f77562ab068, type: 3}
 --- !u!1 &2155233763808554084
 GameObject:
   m_ObjectHideFlags: 0

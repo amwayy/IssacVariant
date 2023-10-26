@@ -26,6 +26,13 @@ public class TurnManager : MonoBehaviour
     private void Start()
     {
         Player.Instance.OnTurnEnd += Player_OnTurnEnd;
+        Player.Instance.OnEnterBattle += Player_OnEnterBattle;
+    }
+
+    private void Player_OnEnterBattle(object sender, Enemy e)
+    {
+        turn = Turn.Player;
+        OnEnterPlayerTurn?.Invoke(this, EventArgs.Empty);
     }
 
     public Turn GetTurnState()

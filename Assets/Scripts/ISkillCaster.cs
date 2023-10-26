@@ -7,12 +7,28 @@ public interface ISkillCaster
 {
     private const float ENTER_BATTLE_SPEED = 15f;
 
-    public event EventHandler<int> OnCheckShield;   // ´«µÝÉËº¦Öµ
     public event EventHandler OnEndCastSkill;
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnAttackReady;
+    public event EventHandler<OnAttackedEventArgs> OnAttacked;
 
-    public void SetDamageTaken(int modifiedDamage);
+    public class OnAttackedEventArgs
+    {
+        public int damage;
+        public bool isRealDamage;
+    }
+
+    public int GetDamageTaken();
+
+    public int GetLastAttackDamage();
+
+    public void SetAttackDamage(int minDamage, int maxDamage);
+
+    public void ModifyHPMaxAmount(int modifiedAmount);
+
+    public void UpdateStatContainer();
+
+    public void ModifyDamageTaken(float modifyPercentage);
 
     // ×·¼Ó¹¥»÷
     public void AppendDamage(int damageAmount);
@@ -29,6 +45,8 @@ public interface ISkillCaster
 
     public void EndTurn();
 
+    public Transform GetTokenContainerTransform();
+
     public Transform GetBuffContainerTransform();
 
     public Transform GetDebuffContainerTransform();
@@ -37,11 +55,13 @@ public interface ISkillCaster
 
     public ISkillCaster GetOpponent();
 
+    public Token SetToken(Transform tokenPrefab, int count);
+
     public Buff SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax);
 
     public Debuff SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0);
 
-    public void SetCastSkill(float castTime);
+    public void SetCastSkill(Skill skill, float castTime);
 
     public void EndCastSkill();
 

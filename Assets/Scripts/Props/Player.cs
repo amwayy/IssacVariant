@@ -20,21 +20,25 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private Transform equippedSkillsTransform;
     [SerializeField] private Transform backupSkillsTransform;
     [SerializeField] private Transform lootSkillsTransform;
+    [SerializeField] private Transform statContainerTransform;
+    [SerializeField] private Transform tokenContainerTransform;
 
     public static Player Instance { get; private set; }
 
     public event EventHandler<Enemy> OnEnterBattle;
     public event EventHandler OnQuitBattle;
-    public event EventHandler OnCastSkill;
+    public event EventHandler<Skill> OnCastSkill;
     public event EventHandler OnTurnEnd;
     public event EventHandler<int> OnTakeDamage;
-    public event EventHandler OnHeal;
+    public event EventHandler<int> OnStartHeal;
+    public event EventHandler OnEndHeal;
     public event EventHandler<int> OnModifyActionPoint;
-    public event EventHandler<int> OnCheckShield;
     public event EventHandler OnEndCastSkill;
     public event EventHandler OnEndLoot;
     public event EventHandler<GameLibrary.Element> OnChangeElement;
     public event EventHandler OnAttackReady;
+    public event EventHandler<ISkillCaster.OnAttackedEventArgs> OnAttacked;   // 被攻击、结算伤害之前触发，用于护盾之外的所受伤害调整
+    public event EventHandler OnHPMaxModified;
 
     public enum Orientation
     {
@@ -84,6 +88,10 @@ public class Player : MonoBehaviour, ISkillCaster
     private GameLibrary.Element element;
     private int atkBeforeBattle;
     private int defBeforeBattle;
+    private int healAmount;
+    private float statIconSize = .7f;
+    private int extraHp;
+    private int extraHpMax;
 
     private void Awake()
     {
@@ -97,6 +105,10 @@ public class Player : MonoBehaviour, ISkillCaster
         attackSpeed = DEFAULT_ATTACK_SPEED;
         equippedSkillCountMax = defaultEquippedSkillCountMax;
         backupSkillCountMax = defaultBackupSkillCountMax;
+
+        buffContainerTransform.gameObject.SetActive(false);
+        debuffContainerTransform.gameObject.SetActive(false);
+        tokenContainerTransform.gameObject.SetActive(false);
 
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
@@ -130,6 +142,50 @@ public class Player : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    public int GetDamageTaken()
+    {
+        return damageTaken;
+    }
+
+    public int GetLastAttackDamage()
+    {
+        return lastAttackDamage;
+    }
+
+    public void SetAttackDamage(int minDamage, int maxDamage)
+    {
+        attackDamageMin = minDamage;
+        attackDamageMax = maxDamage;
+    }
+
+    public int GetExtraHp()
+    {
+        return extraHp;
+    }
+
+    public int GetExtraHpMax()
+    {
+        return extraHpMax;
+    }
+
+    public void SetExtraHp(int extraHpMax)
+    {
+        this.extraHpMax = extraHpMax;
+        extraHp = extraHpMax;
+    }
+
+    public void ModifyHPMaxAmount(int modifiedAmount)
+    {
+        hpMaxAmount = modifiedAmount;
+        hpAmount = Math.Min(hpAmount, hpMaxAmount);
+        OnHPMaxModified?.Invoke(this, EventArgs.Empty);
+    }
+
+    public int GetAttackBaseDamage()
+    {
+        return (attackDamageMin + attackDamageMax) / 2;
     }
 
     public void AppendDamage(int damageAmount)
@@ -213,9 +269,11 @@ public class Player : MonoBehaviour, ISkillCaster
 
     }
 
-    public void SetDamageTaken(int modifiedDamage)
+    public void ModifyDamageTaken(float modifyPercentage)
     {
-        damageTaken = modifiedDamage;
+        Debug.Log("Original Damage: " + damageTaken + "; Modified Damage: " + (int)(damageTaken * (1 + modifyPercentage)));
+
+        damageTaken = (int)(damageTaken * (1 + modifyPercentage));
     }
 
     public void ModifyActionPointMax(int modifyAmount)
@@ -336,6 +394,12 @@ public class Player : MonoBehaviour, ISkillCaster
             }
         }
     }
+
+    public Transform GetTokenContainerTransform()
+    {
+        return tokenContainerTransform;
+    }
+
     public Transform GetBuffContainerTransform()
     {
         return buffContainerTransform;
@@ -346,17 +410,75 @@ public class Player : MonoBehaviour, ISkillCaster
         return debuffContainerTransform;
     }
 
+    public void UpdateStatContainer()
+    {
+        int buffCount = buffContainerTransform.childCount;
+        int debuffCount = debuffContainerTransform.childCount;
+        int tokenCount = tokenContainerTransform.childCount;
+        statContainerTransform.GetComponent<RectTransform>().sizeDelta = 
+            new Vector2(statIconSize * (buffCount + debuffCount + tokenCount), statIconSize);
+
+        if (buffCount != 0)
+        {
+            buffContainerTransform.gameObject.SetActive(true);
+            RectTransform buffContainerRectTransform = buffContainerTransform.GetComponent<RectTransform>();
+            buffContainerRectTransform.sizeDelta = new Vector2(statIconSize * buffCount, statIconSize);
+        } else
+        {
+            buffContainerTransform.gameObject.SetActive(false);
+        }
+
+        if (debuffCount != 0)
+        {
+            debuffContainerTransform.gameObject.SetActive(true);
+            RectTransform debuffContainerRectTransform = debuffContainerTransform.GetComponent<RectTransform>();
+            debuffContainerRectTransform.sizeDelta = new Vector2(statIconSize * debuffCount, statIconSize);
+        } else
+        {
+            debuffContainerTransform.gameObject.SetActive(false);
+        }
+
+        if (tokenCount != 0)
+        {
+            tokenContainerTransform.gameObject.SetActive(true);
+            RectTransform tokenContainerRectTransform = tokenContainerTransform.GetComponent<RectTransform>();
+            tokenContainerRectTransform.sizeDelta = new Vector2(statIconSize * tokenCount, statIconSize);
+        } else
+        {
+            tokenContainerTransform.gameObject.SetActive(false);
+        }
+    }
+
+    public Token SetToken(Transform tokenPrefab, int count)
+    {
+        tokenContainerTransform.gameObject.SetActive(true);
+
+        Transform tokenTransform = Instantiate(tokenPrefab, tokenContainerTransform);
+        Token token = tokenTransform.GetComponent<Token>();
+        token.Initialize(this, count);
+
+        UpdateStatContainer();
+
+        return token;
+    }
+
     public Buff SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax)
     {
+        buffContainerTransform.gameObject.SetActive(true);
+
         Transform buffTransform = Instantiate(buffPrefab, buffContainerTransform);
         Buff buff = buffTransform.GetComponent<Buff>();
         buff.Initialize(this, countdownMax, setBuffTimerMax);
+
+        UpdateStatContainer();
 
         return buff;
     }
 
     public Debuff SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0)
     {
+        debuffContainerTransform.gameObject.SetActive(true);
+
         if (debuffPrefab.TryGetComponent(out Anomaly anomaly))
         {
             foreach (Transform debuffChildTransform in debuffContainerTransform)
@@ -372,6 +494,8 @@ public class Player : MonoBehaviour, ISkillCaster
         Transform debuffTransform = Instantiate(debuffPrefab, debuffContainerTransform);
         Debuff debuff = debuffTransform.GetComponent<Debuff>();
         debuff.Initialize(this, countdownMax, setDebuffTimerMax, extraCountdown);
+
+        UpdateStatContainer();
 
         return debuff; 
     }
@@ -393,12 +517,20 @@ public class Player : MonoBehaviour, ISkillCaster
         }
     }
 
+    public void SetHealAmount(int healAmount)
+    {
+        this.healAmount = healAmount;
+    }
+
     public void Heal(int healAmount)
     {
-        hpAmount += healAmount;
+        this.healAmount = healAmount;
+        OnStartHeal?.Invoke(this, healAmount);
+
+        hpAmount += this.healAmount;
         hpAmount = Math.Min(hpAmount, hpMaxAmount);
 
-        OnHeal?.Invoke(this, EventArgs.Empty);
+        OnEndHeal?.Invoke(this, EventArgs.Empty);
     }
 
     public List<Skill> GetEquippedSkillList()
@@ -496,21 +628,30 @@ public class Player : MonoBehaviour, ISkillCaster
     {
         damageTaken = damage;
 
-        // Check shield
+        // Check damage modify
+        OnAttacked?.Invoke(this, new ISkillCaster.OnAttackedEventArgs { 
+            damage = damage,
+            isRealDamage = isRealDamageTaken
+        });
+
         if (!isRealDamageTaken)
         {
-            foreach (Transform buffTransform in buffContainerTransform)
+            if (damageTaken - extraHp > 0)
             {
-                if (buffTransform.TryGetComponent(out Shield shield))
-                {
-                    OnCheckShield?.Invoke(this, damageTaken);
-                    break;
-                }
+                hpAmount -= (damageTaken - extraHp);
+                hpAmount = Math.Max(0, hpAmount);
+                extraHp = 0;
             }
+            else
+            {
+                extraHp -= damageTaken;
+                extraHp = Math.Max(0, extraHp);
+            }
+        } else
+        {
+            hpAmount -= damageTaken;
+            hpAmount = Math.Max(0, hpAmount);
         }
-
-        hpAmount -= damageTaken;
-        hpAmount = Math.Max(0, hpAmount);
 
         OnTakeDamage?.Invoke(this, damageTaken);
 
@@ -535,13 +676,13 @@ public class Player : MonoBehaviour, ISkillCaster
         availableActionPointCount -= actionPointExpense;
     }
 
-    public void SetCastSkill(float castTime)
+    public void SetCastSkill(Skill skill, float castTime)
     {
         isCastingSkill = true;
         skillCastTime = castTime;
         castSkillTimer = skillCastTime;
 
-        OnCastSkill?.Invoke(this, EventArgs.Empty);
+        OnCastSkill?.Invoke(this, skill);
     }
 
     public void EndCastSkill()
@@ -583,6 +724,16 @@ public class Player : MonoBehaviour, ISkillCaster
         OnAttackReady?.Invoke(this, EventArgs.Empty);
     }
 
+    public void QuitBattle()
+    {
+        attackCount = 1;
+
+        atk = atkBeforeBattle;
+        def = defBeforeBattle;
+
+        OnQuitBattle?.Invoke(this, EventArgs.Empty);
+    }
+
     private void TryAttack()
     {
         if (isAttacking)
@@ -597,16 +748,6 @@ public class Player : MonoBehaviour, ISkillCaster
                 int attackDamage = UnityEngine.Random.Range(attackDamageMin, attackDamageMax + 1);
                 lastAttackDamage = attackDamage;
                 battlingEnemy.TakeDamage(attackDamage, isRealDamage);
-
-                if (battlingEnemy.GetHPAmount() == 0)
-                {
-                    attackCount = 1;
-
-                    atk = atkBeforeBattle;
-                    def = defBeforeBattle;
-
-                    OnQuitBattle?.Invoke(this, EventArgs.Empty);
-                }
             }
         } 
         

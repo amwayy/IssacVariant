@@ -45,9 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 4
+  isEnemyUnappliable: 0
+  skillTypeList: 00000000
+  skillName: "\u5E7D\u722A"
+  skillDescription: "\u82E5\u5BF9\u65B9\u8840\u91CF\u5927\u4E8E70%\uFF0C\u9020\u6210\u53CC\u500D\u4F24\u5BB3"
   thisActionPointExpense: 1
-  damageMin: 75
-  damageMax: 85
+  baseDamage: 80
+  damageDelta: 5
   thisCastTime: 1
   opponentHPThreshold: 0.7
   damageModifyScaler: 2

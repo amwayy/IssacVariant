@@ -44,6 +44,10 @@ public class DamageVisual : MonoBehaviour
     public void SetDamage(int damageAmount)
     {
         damageText.text = damageAmount.ToString();
+        if (damageAmount == 0)
+        {
+            damageText.text = "MISS";
+        }
     }
 
     private void DestroySelf()

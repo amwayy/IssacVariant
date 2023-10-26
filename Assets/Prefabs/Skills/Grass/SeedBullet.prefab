@@ -44,9 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a280b48e6333aa142b4f7a075adfbfb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thisActionPointExpense: 1
-  singleDamageMin: 15
-  singleDamageMax: 25
+  element: 0
+  isEnemyUnappliable: 0
+  skillTypeList: 00000000
+  skillName: "\u79CD\u5B50\u7206\u5F39"
+  skillDescription: "\u653B\u51FB2-4\u6B21"
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
+  baseDamage: 30
+  damageDelta: 5
   minAttackCount: 2
   maxAttackCount: 4
   attackSpeed: 20

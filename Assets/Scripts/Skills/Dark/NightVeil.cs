@@ -4,19 +4,10 @@ using UnityEngine;
 
 public class NightVeil : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 2;
     [SerializeField] private int delayedHealCountdownMax = 2;
-    [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float setBuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform delayedHealDebuffPrefab;
     [SerializeField] private float healPercentage = .15f;
-
-    private void Awake()
-    {
-        skillName = "Night Veil";   // 夜幕
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
 
     public override void CastSkill(ISkillCaster skillCaster)
     {

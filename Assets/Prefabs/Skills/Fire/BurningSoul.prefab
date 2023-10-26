@@ -46,9 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   element: 1
   isEnemyUnappliable: 0
-  thisActionPointExpense: 3
+  skillTypeList: 01000000
+  skillName: "\u71C3\u70E7\u7075\u9B42"
+  skillDescription: "\u91CA\u653E\u6280\u80FD\u540E\u4EE5\u53CA\u4E0B\u56DE\u5408\u5F00\u59CB\u5931\u53BB15%HP\uFF0C\u4E0B\u56DE\u5408\u5F00\u59CB\u8FDB\u5165\u71C3\u70E7\u72B6\u6001"
+  actionPointExpense: 3
+  coolingCountdownMax: 1
+  castTime: 1
   round: 2
-  thisCastTime: 1
   injuredDamagePercentage: 0.15
   injuredCountdownMax: 2
   burnCountdownMax: 1

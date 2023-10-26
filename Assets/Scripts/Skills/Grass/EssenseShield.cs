@@ -4,18 +4,9 @@ using UnityEngine;
 
 public class EssenseShield : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 3;
     [SerializeField] private int halfShieldCountdownMax = 2;
-    [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float setBuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform halfShieldBuffPrefab;
-
-    private void Awake()
-    {
-        skillName = "Essense Shield";
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
 
     public override void CastSkill(ISkillCaster skillCaster)
     {

@@ -5,13 +5,9 @@ using UnityEngine;
 public class BurningSoul : Skill
 {
     //攻击力=0 ;防御力=50 ; 血量=100
-    [SerializeField] private int thisActionPointExpense = 2;
-    //持续两回合
-    [SerializeField] private int round = 2;
-    [SerializeField] private float thisCastTime = 1f;
     //每回合失去当前血量的15%
     [SerializeField] private float injuredDamagePercentage = .15f;
-    [SerializeField] private int injuredCountdownMax = 2;
+    [SerializeField] private int injuredCountdownMax = 2;   //持续两回合
     [SerializeField] private int burnCountdownMax = 1;
     [SerializeField] private Transform injuredPrefab;
     [SerializeField] private Transform burnPrefab;
@@ -23,10 +19,6 @@ public class BurningSoul : Skill
 
     private void Awake()
     {
-        skillName = "Burning Soul";   // 燃烧灵魂
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-
         injuredCountdown = injuredCountdownMax;
     }
 
@@ -44,12 +36,6 @@ public class BurningSoul : Skill
 
         SetInjuredDebuff();
         injuredDebuff.SetDamagePercentage(injuredDamagePercentage);
-
-        //for (int i = 0; i < 2; i++)
-        //{
-        //    int damage = (int)(skillCaster.GetHPAmount() * .15f);
-        //    skillCaster.TakeDamage(damage);
-        //}
     }
 
     private void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
@@ -64,8 +50,6 @@ public class BurningSoul : Skill
 
     private void TrySetBurnBuff()
     {
-        Debug.Log("Try Set Burn");
-
         injuredCountdown--;
 
         if (injuredCountdown == 0)
@@ -121,6 +105,8 @@ public class BurningSoul : Skill
             Debuff debuff = skillCaster.SetDebuff(injuredPrefab, injuredCountdownMax, setDebuffTimerMax);
             injuredDebuff = debuff.GetComponent<Injured>();
         }
+
+        injuredCountdown = injuredCountdownMax;
     }
 
     private void OnDestroy()

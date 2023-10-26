@@ -8,21 +8,45 @@ public class PlayerStatUI : MonoBehaviour
     [SerializeField] private Transform actionPointContainerTransform;
     [SerializeField] private Transform actionPointPrefab;
     [SerializeField] private Image hpBarImage;
+    [SerializeField] private GameObject extraHPGameObject;
+    [SerializeField] private Image extraHpBarImage;
+
+    public static PlayerStatUI Instance { get; private set; }
 
     private void Awake()
     {
+        Instance = this;
+
         actionPointContainerTransform.gameObject.SetActive(false);
+        extraHPGameObject.SetActive(false);
     }
 
     private void Start()
     {
         Player.Instance.OnCastSkill += Player_OnCastSkill;
         Player.Instance.OnTakeDamage += Player_OnTakeDamage;
-        Player.Instance.OnHeal += Player_OnHeal;
+        Player.Instance.OnEndHeal += Player_OnHeal;
         Player.Instance.OnEnterBattle += Player_OnEnterBattle;
         Player.Instance.OnQuitBattle += Player_OnQuitBattle;
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
         Player.Instance.OnModifyActionPoint += Player_OnModifyActionPoint;
+        Player.Instance.OnHPMaxModified += Player_OnHPMaxModified;
+    }
+
+    public void ShowExtraHP()
+    {
+        extraHPGameObject.SetActive(true);
+        UpdateHPBarVisual();
+    }
+
+    private void Player_OnHPMaxModified(object sender, System.EventArgs e)
+    {
+        UpdateHPBarVisual();
+    }
+
+    private void Player_OnCastSkill(object sender, Skill e)
+    {
+        UpdateActionPointVisual();
     }
 
     private void Player_OnModifyActionPoint(object sender, int e)
@@ -52,6 +76,7 @@ public class PlayerStatUI : MonoBehaviour
     private void Player_OnQuitBattle(object sender, System.EventArgs e)
     {
         actionPointContainerTransform.gameObject.SetActive(false);
+        extraHPGameObject.SetActive(false);
     }
 
     private void Player_OnEnterBattle(object sender, Enemy e)
@@ -78,11 +103,9 @@ public class PlayerStatUI : MonoBehaviour
     {
         float hpPercentage = ((float)Player.Instance.GetHPAmount()) / Player.Instance.GetHPMaxAmount();
         hpBarImage.fillAmount = hpPercentage;
-    }
 
-    private void Player_OnCastSkill(object sender, System.EventArgs e)
-    {
-        UpdateActionPointVisual();
+        float extraHpPercentage = ((float)Player.Instance.GetExtraHp()) / Player.Instance.GetExtraHpMax();
+        extraHpBarImage.fillAmount = extraHpPercentage;
     }
 
     private void UpdateActionPointVisual()

@@ -45,9 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 2
+  isEnemyUnappliable: 0
+  skillTypeList: 00000000
+  skillName: "\u98DE\u6D41\u7011\u5E03"
+  skillDescription: "\u653B\u51FB2-4\u6B21\uFF0C\u6BCF\u6B21\u56FA\u5B9A\u589E\u52A015\u4F24\u5BB3"
   thisActionPointExpense: 1
-  singleDamageMin: 15
-  singleDamageMax: 25
+  baseDamage: 20
+  damageDelta: 5
   minAttackCount: 2
   maxAttackCount: 4
   attackModifyAmount: 15

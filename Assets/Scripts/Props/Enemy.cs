@@ -19,12 +19,15 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private int atk = 100;
     [SerializeField] private int def = 100;
     [SerializeField] GameLibrary.Element element;
+    [SerializeField] private Transform statContainerTransform;
+    [SerializeField] private Transform tokenContainerTransform;
 
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
-    public event EventHandler<int> OnCheckShield;
     public event EventHandler OnEndCastSkill;
     public event EventHandler OnAttackReady;
+    public event EventHandler<ISkillCaster.OnAttackedEventArgs> OnAttacked;
+    public event EventHandler OnHPMaxModified;
 
     public enum Orientation
     {
@@ -62,6 +65,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private List<Skill> equippedSkillList = new List<Skill>();
     private bool isRealDamage;   // 受到的是否为真实伤害，即是否无视护盾
     private int damageTaken;
+    private float statIconSize = .7f;
 
     private void Awake()
     {
@@ -72,6 +76,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
         hpAmount = hpMaxAmount;
         attackSpeed = DEFAULT_ATTACK_SPEED;
+
+        buffContainerTransform.gameObject.SetActive(false);
+        debuffContainerTransform.gameObject.SetActive(false);
+        tokenContainerTransform.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -100,15 +108,40 @@ public class Enemy : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
+    public int GetDamageTaken()
+    {
+        return damageTaken;
+    }
+
+    public int GetLastAttackDamage()
+    {
+        return lastAttackDamage;
+    }
+
+    public void SetAttackDamage(int minDamage, int maxDamage)
+    {
+        attackDamageMin = minDamage;
+        attackDamageMax = maxDamage;
+    }
+
+    public void ModifyHPMaxAmount(int modifiedAmount)
+    {
+        hpMaxAmount = modifiedAmount;
+        hpAmount = Math.Min(hpAmount, hpMaxAmount);
+        OnHPMaxModified?.Invoke(this, EventArgs.Empty);
+    }
+
     public void AppendDamage(int damageAmount)
     {
         attackDamageMin += damageAmount;
         attackDamageMax += damageAmount;
     }
 
-    public void SetDamageTaken(int modifiedDamage)
+    public void ModifyDamageTaken(float modifyPercentage)
     {
-        damageTaken = modifiedDamage;
+        Debug.Log("Original Damage: " + damageTaken + "; Modified Damage: " + (int)(damageTaken * (1 + modifyPercentage)));
+
+        damageTaken = (int)(damageTaken * (1 + modifyPercentage));
     }
 
     public int GetATK()
@@ -134,6 +167,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
     public void SetAttackModify(int modifyAmount)
     {
         attackModifyAmount = modifyAmount;
+    }
+
+    public Transform GetTokenContainerTransform()
+    {
+        return tokenContainerTransform;
     }
 
     public Transform GetBuffContainerTransform()
@@ -189,17 +227,78 @@ public class Enemy : MonoBehaviour, ISkillCaster
         Debug.Log("Enemy Casted " + equippedSkillList[castedSkillIndex].GetSkillName());
     }
 
+    public void UpdateStatContainer()
+    {
+        int buffCount = buffContainerTransform.childCount;
+        int debuffCount = debuffContainerTransform.childCount;
+        int tokenCount = tokenContainerTransform.childCount;
+        statContainerTransform.GetComponent<RectTransform>().sizeDelta =
+            new Vector2(statIconSize * (buffCount + debuffCount + tokenCount), statIconSize);
+
+        if (buffCount != 0)
+        {
+            buffContainerTransform.gameObject.SetActive(true);
+            RectTransform buffContainerRectTransform = buffContainerTransform.GetComponent<RectTransform>();
+            buffContainerRectTransform.sizeDelta = new Vector2(statIconSize * buffCount, statIconSize);
+        }
+        else
+        {
+            buffContainerTransform.gameObject.SetActive(false);
+        }
+
+        if (debuffCount != 0)
+        {
+            debuffContainerTransform.gameObject.SetActive(true);
+            RectTransform debuffContainerRectTransform = debuffContainerTransform.GetComponent<RectTransform>();
+            debuffContainerRectTransform.sizeDelta = new Vector2(statIconSize * debuffCount, statIconSize);
+        }
+        else
+        {
+            debuffContainerTransform.gameObject.SetActive(false);
+        }
+
+        if (tokenCount != 0)
+        {
+            tokenContainerTransform.gameObject.SetActive(true);
+            RectTransform tokenContainerRectTransform = tokenContainerTransform.GetComponent<RectTransform>();
+            tokenContainerRectTransform.sizeDelta = new Vector2(statIconSize * tokenCount, statIconSize);
+        }
+        else
+        {
+            tokenContainerTransform.gameObject.SetActive(false);
+        }
+    }
+
+    public Token SetToken(Transform tokenPrefab, int count)
+    {
+        tokenContainerTransform.gameObject.SetActive(true);
+
+        Transform tokenTransform = Instantiate(tokenPrefab, tokenContainerTransform);
+        Token token = tokenTransform.GetComponent<Token>();
+        token.Initialize(this, count);
+
+        UpdateStatContainer();
+
+        return token;
+    }
+
     public Buff SetBuff(Transform buffPrefab, int countdownMax, float setBuffTimerMax)
     {
+        buffContainerTransform.gameObject.SetActive(true);
+
         Transform buffTransform = Instantiate(buffPrefab, buffContainerTransform);
         Buff buff = buffTransform.GetComponent<Buff>();
         buff.Initialize(this, countdownMax, setBuffTimerMax);
+
+        UpdateStatContainer();
 
         return buff;
     }
 
     public Debuff SetDebuff(Transform debuffPrefab, int countdownMax, float setDebuffTimerMax, int extraCountdown = 0)
     {
+        debuffContainerTransform.gameObject.SetActive(true);
+
         if (debuffPrefab.TryGetComponent(out Anomaly anomaly))
         {
             foreach (Transform debuffChildTransform in debuffContainerTransform)
@@ -216,6 +315,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
         Debuff debuff = debuffTransform.GetComponent<Debuff>();
         debuff.Initialize(this, countdownMax, setDebuffTimerMax, extraCountdown);
 
+        UpdateStatContainer();
+
         return debuff;
     }
 
@@ -224,7 +325,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
         return Player.Instance;
     }
 
-    public void SetCastSkill(float castTime)
+    public void SetCastSkill(Skill skill, float castTime)
     {
         skillCastTime = castTime;
         castSkillTimer = skillCastTime;
@@ -370,18 +471,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         damageTaken = damage;
 
-        // Check shield
-        if (!isRealDamageTaken)
+        // Check damage modify
+        OnAttacked?.Invoke(this, new ISkillCaster.OnAttackedEventArgs
         {
-            foreach (Transform buffTransform in buffContainerTransform)
-            {
-                if (buffTransform.TryGetComponent(out Shield shield))
-                {
-                    OnCheckShield?.Invoke(this, damageTaken);
-                    break;
-                }
-            }
-        }
+            damage = damage,
+            isRealDamage = isRealDamageTaken
+        });
 
         hpAmount -= damageTaken;
         hpAmount = Math.Max(0, hpAmount);
@@ -396,6 +491,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void Die()
     {
+        Player.Instance.QuitBattle();
         Player.Instance.SetLootSkillList(equippedSkillList);
 
         DestroySelf();

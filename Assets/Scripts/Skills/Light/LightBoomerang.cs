@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class LightBoomerang : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 2;
-    [SerializeField] private int singleDamageMin = 35;
-    [SerializeField] private int singleDamageMax = 45;
+    [SerializeField] private int baseDamage = 40;
+    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int minAttackCount = 2;
     [SerializeField] private int maxAttackCount = 4;
     [SerializeField] private float attackSpeed = 20f;
@@ -15,12 +14,6 @@ public class LightBoomerang : Skill
 
     private bool isInCast;
     private bool isFirstCast = true;
-
-    private void Awake()
-    {
-        skillName = "Light Boomerang";
-        actionPointExpense = thisActionPointExpense;
-    }
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
@@ -38,7 +31,7 @@ public class LightBoomerang : Skill
             isFirstCast = false;
         }
 
-        skillCaster.SetAttack(singleDamageMin, singleDamageMax, attackSpeed, randomAttackCount);
+        skillCaster.SetAttack(baseDamage - damageDelta, baseDamage + damageDelta, attackSpeed, randomAttackCount);
     }
 
     private void SkillCaster_OnEndCastSkill(object sender, System.EventArgs e)
@@ -61,9 +54,10 @@ public class LightBoomerang : Skill
         if (randomNum <= clearOpponentBuffProbability)
         {
             Transform opponentBuffsTransform = skillCaster.GetOpponent().GetBuffContainerTransform();
-            foreach (Transform buffTransform in opponentBuffsTransform)
+            int opponentBuffCount = opponentBuffsTransform.childCount;
+            if (opponentBuffCount != 0)
             {
-                buffTransform.GetComponent<Buff>().DestroySelf();
+                opponentBuffsTransform.GetChild(Random.Range(0, opponentBuffCount)).GetComponent<Buff>().DestroySelf();
             }
         }
     }

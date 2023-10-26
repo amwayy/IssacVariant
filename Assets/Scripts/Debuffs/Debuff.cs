@@ -16,7 +16,7 @@ public class Debuff : MonoBehaviour
     private float setDebuffTimerMax;
     private bool isSettingDebuff = true;
 
-    private void Start()
+    protected virtual void Start()
     {
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
         TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
@@ -116,7 +116,7 @@ public class Debuff : MonoBehaviour
 
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
         TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
@@ -126,6 +126,9 @@ public class Debuff : MonoBehaviour
     public void DestroySelf()
     {
         transform.SetParent(null);
+
+        debuffOwner.UpdateStatContainer();
+
         Destroy(gameObject);
     }
 }

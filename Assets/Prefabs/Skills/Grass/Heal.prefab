@@ -46,6 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   element: 0
   isEnemyUnappliable: 0
-  thisActionPointExpense: 1
-  thisCastTime: 1
+  skillTypeList: 01000000
+  skillName: "\u6CBB\u6108"
+  skillDescription: "\u56DE\u590D\u8840\u91CF\u4E0A\u965035%"
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
   healPercentage: 0.35

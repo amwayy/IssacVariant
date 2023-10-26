@@ -4,19 +4,10 @@ using UnityEngine;
 
 public class PitchBlack : Skill
 {
-    [SerializeField] private int thisActionPointExpense = 1;
     [SerializeField] private int atkUpCountdownMax = 1;
-    [SerializeField] private float thisCastTime = 1f;
     [SerializeField] private float setBuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform atkUpBuffPrefab;
     [SerializeField] private float atkUpPercentage = .2f;
-
-    private void Awake()
-    {
-        skillName = "Pitch Black";   // 漆黑
-        actionPointExpense = thisActionPointExpense;
-        castTime = thisCastTime;
-    }
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
