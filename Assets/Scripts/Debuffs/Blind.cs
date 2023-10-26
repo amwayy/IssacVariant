@@ -36,7 +36,7 @@ public class Blind : Anomaly
         float randomNum = (float)random.NextDouble();
         if (randomNum < missProbability)
         {
-            debuffOwner.SetAttackDamage(0, 0);
+            debuffOwner.ModifyAttackDamage(-1);
         }
     }
 

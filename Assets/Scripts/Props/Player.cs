@@ -92,6 +92,7 @@ public class Player : MonoBehaviour, ISkillCaster
     private float statIconSize = .7f;
     private int extraHp;
     private int extraHpMax;
+    private Skill lastCastSkill;
 
     private void Awake()
     {
@@ -144,6 +145,11 @@ public class Player : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
+    public Skill GetLastCastSkill()
+    {
+        return lastCastSkill;
+    }
+
     public int GetDamageTaken()
     {
         return damageTaken;
@@ -154,10 +160,10 @@ public class Player : MonoBehaviour, ISkillCaster
         return lastAttackDamage;
     }
 
-    public void SetAttackDamage(int minDamage, int maxDamage)
+    public void ModifyAttackDamage(float modifyPercentage)
     {
-        attackDamageMin = minDamage;
-        attackDamageMax = maxDamage;
+        attackDamageMin = (int)(attackDamageMin * (1 + modifyPercentage));
+        attackDamageMax = (int)(attackDamageMax * (1 + modifyPercentage));
     }
 
     public int GetExtraHp()
@@ -681,6 +687,8 @@ public class Player : MonoBehaviour, ISkillCaster
         isCastingSkill = true;
         skillCastTime = castTime;
         castSkillTimer = skillCastTime;
+
+        lastCastSkill = skill;
 
         OnCastSkill?.Invoke(this, skill);
     }

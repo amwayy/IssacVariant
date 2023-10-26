@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SeedToken : Token
+public class WeaknessToken : Token
 {
-    [SerializeField] private float singleDamageIncreasePercentage = .05f;
+    [SerializeField] private float singleDamageIncreasePercentage = .15f;
 
     public override void Initialize(ISkillCaster skillCaster, int count)
     {

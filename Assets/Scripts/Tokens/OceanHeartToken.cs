@@ -28,8 +28,10 @@ public class OceanHeartToken : Token
         DestroySelf();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
     }
 }

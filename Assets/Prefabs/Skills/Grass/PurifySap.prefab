@@ -48,7 +48,7 @@ MonoBehaviour:
   isEnemyUnappliable: 0
   skillTypeList: 01000000
   skillName: "\u51C0\u5316\u6C41\u6DB2"
-  skillDescription: "\u6E05\u9664\u81EA\u8EAB\u8D1F\u9762\u72B6\u6001"
+  skillDescription: "\u6E05\u9664\u81EA\u8EAB\u6240\u6709\u8D1F\u9762\u72B6\u6001"
   actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1

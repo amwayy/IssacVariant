@@ -11,6 +11,16 @@ public class Token : MonoBehaviour
     protected int count;
     protected ISkillCaster tokenOwner;
 
+    private void Start()
+    {
+        Player.Instance.OnQuitBattle += Player_OnQuitBattle;
+    }
+
+    private void Player_OnQuitBattle(object sender, System.EventArgs e)
+    {
+        DestroySelf();
+    }
+
     public int GetCount()
     {
         return count;
@@ -35,6 +45,14 @@ public class Token : MonoBehaviour
     public void DestroySelf()
     {
         transform.SetParent(null);
+
+        tokenOwner.UpdateStatContainer();
+
         Destroy(gameObject);
+    }
+
+    protected virtual void OnDestroy()
+    {
+        Player.Instance.OnQuitBattle -= Player_OnQuitBattle;
     }
 }

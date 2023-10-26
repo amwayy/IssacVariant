@@ -11,6 +11,7 @@ public interface ISkillCaster
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnAttackReady;
     public event EventHandler<OnAttackedEventArgs> OnAttacked;
+    public event EventHandler<Skill> OnCastSkill;
 
     public class OnAttackedEventArgs
     {
@@ -18,11 +19,13 @@ public interface ISkillCaster
         public bool isRealDamage;
     }
 
+    public Skill GetLastCastSkill();
+
     public int GetDamageTaken();
 
     public int GetLastAttackDamage();
 
-    public void SetAttackDamage(int minDamage, int maxDamage);
+    public void ModifyAttackDamage(float mofifyPercentage);
 
     public void ModifyHPMaxAmount(int modifiedAmount);
 

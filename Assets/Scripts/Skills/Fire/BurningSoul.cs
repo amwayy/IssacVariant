@@ -63,6 +63,9 @@ public class BurningSoul : Skill
             bool isBurning = false;
             Burn burn = null;
             Transform buffContainerTransform = skillCaster.GetBuffContainerTransform();
+
+            if (buffContainerTransform == null) return;
+
             foreach (Transform buffTransform in buffContainerTransform)
             {
                 if (buffTransform.TryGetComponent(out burn))

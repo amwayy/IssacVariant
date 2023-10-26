@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3930392331736949166}
-  - component: {fileID: -2448377618109443050}
+  - component: {fileID: -4258139589740027021}
   m_Layer: 0
-  m_Name: TestInstantKill
+  m_Name: Ponding3000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-2448377618109443050
+--- !u!114 &-4258139589740027021
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,16 +41,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 9164202994172025593}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b6ab5fa53083404c87727bc04949a43, type: 3}
+  m_Script: {fileID: 11500000, guid: df4f17e50128d0d4591a2bd757c06ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  element: 0
-  isEnemyUnappliable: 1
-  skillTypeList: 
-  skillName: "\u6D4B\u8BD5\u7528"
-  skillDescription: "\u79D2\u6740"
-  actionPointExpense: 0
+  element: 2
+  isEnemyUnappliable: 0
+  skillTypeList: 0000000002000000
+  skillName: "\u79EF\u6C34\u4E09\u5343"
+  skillDescription: "\u4E0B\u56DE\u5408\u81EA\u8EAB\u653B\u51FB\u529B\u964D\u4F4E30%\uFF0C\u6C34\u5C5E\u6027\u653B\u51FB30%\u6982\u7387\u9020\u6210\u6EBA\u4EA1"
+  actionPointExpense: 3
   coolingCountdownMax: 1
   castTime: 1
-  thisActionPointExpense: 1
-  thisCastTime: 1
+  baseDamage: 170
+  damageDelta: 5
+  atkDownCountdownMax: 1
+  damageCountdownMax: 2
+  imprisonCountdownMax: 1
+  atkDownDebuffPrefab: {fileID: 2463174454272902535, guid: dcdf4146e0b197843adcd82bdc9ea5a0, type: 3}
+  drownDebuffPrefab: {fileID: 2463174454272902535, guid: 30c497b6c17907142adbbf408c228fdf, type: 3}
+  setDebuffTimerMax: 0.5
+  atkDownPercentage: 0.3
+  drownProbability: 0.5

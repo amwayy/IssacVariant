@@ -31,8 +31,10 @@ public class DarkToken : Token
         tokenOwner.ModifyDamageTaken((float)modifiedOpponentAtk / opponentAtk - 1);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         tokenOwner.OnAttacked -= TokenOwner_OnAttacked;
     }
 }

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3930392331736949166}
-  - component: {fileID: -2448377618109443050}
+  - component: {fileID: 7308583288011920065}
   m_Layer: 0
-  m_Name: TestInstantKill
+  m_Name: PureHeart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-2448377618109443050
+--- !u!114 &7308583288011920065
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,16 +41,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 9164202994172025593}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b6ab5fa53083404c87727bc04949a43, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ec380241e8dee645a4532b9362bfc69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  element: 0
-  isEnemyUnappliable: 1
-  skillTypeList: 
-  skillName: "\u6D4B\u8BD5\u7528"
-  skillDescription: "\u79D2\u6740"
-  actionPointExpense: 0
+  element: 2
+  isEnemyUnappliable: 0
+  skillTypeList: 01000000
+  skillName: "\u7EAF\u51C0\u4E4B\u5FC3"
+  skillDescription: "\u6E05\u9664\u81EA\u8EAB\u6240\u6709\u8D1F\u9762\u72B6\u6001"
+  actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1
-  thisActionPointExpense: 1
-  thisCastTime: 1

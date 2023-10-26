@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     public event EventHandler OnAttackReady;
     public event EventHandler<ISkillCaster.OnAttackedEventArgs> OnAttacked;
     public event EventHandler OnHPMaxModified;
+    public event EventHandler<Skill> OnCastSkill;
 
     public enum Orientation
     {
@@ -66,6 +67,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private bool isRealDamage;   // 受到的是否为真实伤害，即是否无视护盾
     private int damageTaken;
     private float statIconSize = .7f;
+    private Skill lastCastSkill;
 
     private void Awake()
     {
@@ -108,6 +110,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
+    public Skill GetLastCastSkill()
+    {
+        return lastCastSkill;
+    }
+
     public int GetDamageTaken()
     {
         return damageTaken;
@@ -118,10 +125,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
         return lastAttackDamage;
     }
 
-    public void SetAttackDamage(int minDamage, int maxDamage)
+    public void ModifyAttackDamage(float modifyPercentage)
     {
-        attackDamageMin = minDamage;
-        attackDamageMax = maxDamage;
+        attackDamageMin = (int)(attackDamageMin * (1 + modifyPercentage));
+        attackDamageMax = (int)(attackDamageMax * (1 + modifyPercentage));
     }
 
     public void ModifyHPMaxAmount(int modifiedAmount)
@@ -222,7 +229,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         isCastingSkill = true;
         int castedSkillIndex = UnityEngine.Random.Range(0, equippedSkillList.Count);
-        equippedSkillList[castedSkillIndex].CastSkill(this);
+        Skill randomSkill = equippedSkillList[castedSkillIndex].GetComponent<Skill>();
+        randomSkill.CastSkill(this);
 
         Debug.Log("Enemy Casted " + equippedSkillList[castedSkillIndex].GetSkillName());
     }
@@ -329,6 +337,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         skillCastTime = castTime;
         castSkillTimer = skillCastTime;
+
+        lastCastSkill = skill;
+
+        OnCastSkill?.Invoke(this, skill);
     }
 
     public void EndCastSkill()
