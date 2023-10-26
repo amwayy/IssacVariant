@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3930392331736949166}
-  - component: {fileID: -6927906587931311641}
+  - component: {fileID: 6490714887196850076}
   m_Layer: 0
-  m_Name: WildFire
+  m_Name: LightOfDark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6927906587931311641
+--- !u!114 &6490714887196850076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,16 +41,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 9164202994172025593}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2db40aef6eacd1e41a49f0b278e4f1f5, type: 3}
+  m_Script: {fileID: 11500000, guid: 491298df585b93a4bad1205d26b277f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  element: 1
+  element: 0
   isEnemyUnappliable: 0
-  skillTypeList: 00000000
-  skillName: "\u8352\u706B"
-  skillDescription: "\u5F15\u53D1\u706B\u7130\u653B\u51FB\u5BF9\u65B9"
-  actionPointExpense: 1
+  skillTypeList: 
+  skillName: "\u9ED1\u591C\u4E4B\u5149"
+  skillDescription: "\u653B\u51FB\u529B\u548C\u9632\u5FA1\u529B\u589E\u52A020%\uFF0C\u6301\u7EED2\u56DE\u5408"
+  actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1
-  baseDamage: 70
-  damageDelta: 5
+  atkUpPercentage: 0.2
+  defUpPercentage: 0.2
+  atkUpBuffPrefab: {fileID: 0}
+  defUpBuffPrefab: {fileID: 0}
+  setBuffTimerMax: 0.5
