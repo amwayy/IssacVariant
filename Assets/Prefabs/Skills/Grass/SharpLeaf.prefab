@@ -54,6 +54,8 @@ MonoBehaviour:
   castTime: 1
   baseDamage: 75
   damageDelta: 5
+  defense: 50
+  health: 50
   bleedCountdownMax: 4
   bleedProbability: 0.2
   setDebuffTimerMax: 0.5

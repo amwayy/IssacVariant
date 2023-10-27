@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class SeaWithSky : Skill
 {
-    [SerializeField] private int baseDamage = 150;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int singleSetTokenCount = 1;
     [SerializeField] private Transform weaknessTokenPrefab;
 

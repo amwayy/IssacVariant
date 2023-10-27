@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class HallucinationClaw : Skill
 {
-    [SerializeField] private int baseDamage = 120;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int attackModifyAmount = 30;
     [SerializeField] private float attackSpeed = 120f;
     [SerializeField] private int bleedCountdownMax = 4;

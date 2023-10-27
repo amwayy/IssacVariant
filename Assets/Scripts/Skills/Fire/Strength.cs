@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Strength : Skill
 {
-    [SerializeField] private int baseDamage = 90;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private float atkUpPercentage = .1f;
     [SerializeField] private float defUpPercentage = .1f;
     [SerializeField] private Transform atkUpBuffPrefab;

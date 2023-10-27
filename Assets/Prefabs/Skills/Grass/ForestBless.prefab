@@ -52,6 +52,10 @@ MonoBehaviour:
   actionPointExpense: 3
   coolingCountdownMax: 1
   castTime: 1
+  baseDamage: 0
+  damageDelta: 5
+  defense: 150
+  health: 150
   healPercentage: 0.3
   forestBlessBuffCountdownMax: 1
   setBuffTimerMax: 0.5

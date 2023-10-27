@@ -52,4 +52,8 @@ MonoBehaviour:
   actionPointExpense: 1
   coolingCountdownMax: 1
   castTime: 1
+  baseDamage: 0
+  damageDelta: 5
+  defense: 100
+  health: 50
   healPercentage: 0.35

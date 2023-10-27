@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class VinesTwine : Skill
 {
-    [SerializeField] private int baseDamage = 100;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private float imprisonProbability = .2f;
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform imprisonDebuffPrefab;

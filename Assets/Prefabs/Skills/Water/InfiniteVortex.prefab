@@ -54,6 +54,8 @@ MonoBehaviour:
   castTime: 1
   baseDamage: 100
   damageDelta: 5
+  defense: 70
+  health: 100
   damageCountdownMax: 2
   imprisonCountdownMax: 1
   drownProbability: 0.5

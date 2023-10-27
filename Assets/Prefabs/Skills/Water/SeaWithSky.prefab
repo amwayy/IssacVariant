@@ -54,5 +54,7 @@ MonoBehaviour:
   castTime: 1
   baseDamage: 150
   damageDelta: 5
+  defense: 90
+  health: 150
   singleSetTokenCount: 1
   weaknessTokenPrefab: {fileID: 2463174454272902535, guid: be31051cbf7f6a641830579407d79030, type: 3}

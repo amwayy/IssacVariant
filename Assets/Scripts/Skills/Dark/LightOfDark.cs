@@ -9,9 +9,8 @@ public class LightOfDark : Skill
     [SerializeField] private Transform atkUpBuffPrefab;
     [SerializeField] private Transform defUpBuffPrefab;
     [SerializeField] private float setBuffTimerMax = .5f;   // 设定Debuff的缓冲时间
-
-    private int atkUpCountdownMax = 2; 
-    private int defUpCountdownMax = 2;
+    [SerializeField] private int atkUpCountdownMax = 2; 
+    [SerializeField] private int defUpCountdownMax = 2;
 
     public override void CastSkill(ISkillCaster skillCaster)
     {

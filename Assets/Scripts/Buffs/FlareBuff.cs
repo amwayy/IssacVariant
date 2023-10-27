@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoubleDamage : Buff
+public class FlareBuff : Buff
 {
-    private float damageModifyPercentage = 2f;
+    [SerializeField] private float perExpenseDamageIncreasePercentage = .1f;
 
     protected override void Start()
     {
@@ -15,10 +15,9 @@ public class DoubleDamage : Buff
 
     private void BuffOwner_OnAttackReady(object sender, System.EventArgs e)
     {
-        if (buffOwner.GetLastCastSkill().GetElement() == GameLibrary.Element.Water)
-        {
-            buffOwner.ModifyAttackDamage(damageModifyPercentage - 1);
-        }
+        Skill castSkill = buffOwner.GetLastCastSkill();
+        int actionPointExpense = castSkill.GetActionPointExpense();
+        buffOwner.ModifyAttackDamage(perExpenseDamageIncreasePercentage * actionPointExpense);
     }
 
     protected override void OnDestroy()

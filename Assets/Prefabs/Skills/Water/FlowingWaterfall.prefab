@@ -49,9 +49,13 @@ MonoBehaviour:
   skillTypeList: 00000000
   skillName: "\u98DE\u6D41\u7011\u5E03"
   skillDescription: "\u653B\u51FB2-4\u6B21\uFF0C\u6BCF\u6B21\u56FA\u5B9A\u589E\u52A015\u4F24\u5BB3"
-  thisActionPointExpense: 1
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
   baseDamage: 20
   damageDelta: 5
+  defense: 30
+  health: 50
   minAttackCount: 2
   maxAttackCount: 4
   attackModifyAmount: 15

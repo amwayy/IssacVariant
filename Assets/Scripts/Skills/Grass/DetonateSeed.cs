@@ -5,7 +5,6 @@ using UnityEngine;
 public class DetonateSeed : Skill
 {
     [SerializeField] private int seedBaseDamage = 40;
-    [SerializeField] private int damageDelta = 5;
 
     public override void CastSkill(ISkillCaster skillCaster)
     {

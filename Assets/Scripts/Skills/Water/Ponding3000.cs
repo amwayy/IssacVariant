@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Ponding3000 : Skill
 {
-    [SerializeField] private int baseDamage = 170;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int atkDownCountdownMax = 1;
     [SerializeField] private int damageCountdownMax = 2;
     [SerializeField] private int imprisonCountdownMax = 1;

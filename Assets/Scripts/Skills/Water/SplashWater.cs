@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class SplashWater : Skill
 {
-    [SerializeField] private int baseDamage = 50;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int atkDownCountdownMax = 2;
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private Transform atkDownDebuffPrefab;

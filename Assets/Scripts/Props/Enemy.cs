@@ -9,18 +9,27 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private float enemyChangeDirTimerMax;
     [SerializeField] private float enemyHeight;
     [SerializeField] private float enemyWidth;
-    [SerializeField] private int hpMaxAmount;
     [SerializeField] private int attackCount = 1;
     [SerializeField] private int equippedSkillCountMax = 4;
     [SerializeField] private Transform equippedSkillsTransform;
     [SerializeField] private Transform debuffContainerTransform;
     [SerializeField] private Transform buffContainerTransform;
     [SerializeField] private Vector3 attackPosBias;
-    [SerializeField] private int atk = 100;
-    [SerializeField] private int def = 100;
+    [SerializeField] private int baseAtk = 50;
+    [SerializeField] private int baseDef = 50;
+    [SerializeField] private int baseHpMax = 300;
     [SerializeField] GameLibrary.Element element;
     [SerializeField] private Transform statContainerTransform;
     [SerializeField] private Transform tokenContainerTransform;
+    [SerializeField] private int atkIncreasePerLevel = 20;
+    [SerializeField] private int defIncreasePerLevel = 20;
+    [SerializeField] private int hpMaxIncreasePerLevel = 50;
+    [SerializeField] private float rSkillBaseProbability = .95f;
+    [SerializeField] private float srSkillBaseProbability = .04f;
+    [SerializeField] private float ssrSkillBaseProbability = .01f;
+    [SerializeField] private float rSkillProbabilityDecreasePerLevel = .04f;
+    [SerializeField] private float srSkillProbabilityIncreasePerLevel = .025f;
+    [SerializeField] private float ssrSkillProbabilityIncreasePerLevel = .015f;
 
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
@@ -39,7 +48,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     }
 
     private const float ENTER_BATTLE_SPEED = 15f;
-    private const float EPISILON_DISTANCE = .05f;
+    private const float EPISILON_DISTANCE = .1f;
     private const float DEFAULT_ATTACK_SPEED = 10f;
 
     private Rigidbody2D enemyRigidbody;
@@ -58,7 +67,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private bool isDebuffMakingEffect;
     private bool isImprisoned;
     private Orientation orientation;
-    private int hpAmount;
+    private int hpAmount = -1;
     private int attackDamageMin;
     private int attackDamageMax;
     private int lastAttackDamage;
@@ -68,6 +77,9 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private int damageTaken;
     private float statIconSize = .7f;
     private Skill lastCastSkill;
+    private int atk = 100;
+    private int def = 100;
+    private int hpMaxAmount;
 
     private void Awake()
     {
@@ -76,7 +88,6 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
         enemyRigidbody = GetComponent<Rigidbody2D>();
 
-        hpAmount = hpMaxAmount;
         attackSpeed = DEFAULT_ATTACK_SPEED;
 
         buffContainerTransform.gameObject.SetActive(false);
@@ -88,6 +99,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         Player.Instance.OnEnterBattle += Player_OnEnterBattle;
         TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
+
+        baseAtk += GameLibrary.Instance.GetLevelCount() * atkIncreasePerLevel;
+        baseDef += GameLibrary.Instance.GetLevelCount() * defIncreasePerLevel;
+        baseHpMax += GameLibrary.Instance.GetLevelCount() * hpMaxIncreasePerLevel;
 
         InitializeSkill();
     }
@@ -110,6 +125,33 @@ public class Enemy : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
+    private void UpdateAttribute()
+    {
+        atk = baseAtk;
+        def = baseDef;
+        hpMaxAmount = baseHpMax;
+
+        foreach (Skill equippedSkill in equippedSkillList)
+        {
+            if (equippedSkill.GetElement() == element)
+            {
+                atk += equippedSkill.GetAttack();
+                def += equippedSkill.GetDefense();
+                hpMaxAmount += equippedSkill.GetHealth();
+            }
+        }
+
+        // 初始化
+        if (hpAmount < 0)
+        {
+            hpAmount = hpMaxAmount;
+        }
+        hpAmount = Math.Min(hpAmount, hpMaxAmount);
+
+        OnHPMaxModified?.Invoke(this, EventArgs.Empty);
+        Debug.Log("Enemy Atk: " + atk + "; Enemy Def: " + def + "; Enemy HP: " + hpMaxAmount);
+    }
+
     public Skill GetLastCastSkill()
     {
         return lastCastSkill;
@@ -129,6 +171,8 @@ public class Enemy : MonoBehaviour, ISkillCaster
     {
         attackDamageMin = (int)(attackDamageMin * (1 + modifyPercentage));
         attackDamageMax = (int)(attackDamageMax * (1 + modifyPercentage));
+
+        Debug.Log("Attack Damage Modified " + modifyPercentage);
     }
 
     public void ModifyHPMaxAmount(int modifiedAmount)
@@ -365,20 +409,61 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void InitializeSkill()
     {
-        List<Skill> skillList = new List<Skill>();
+        List<Skill> rSkillList = new List<Skill>();
+        List<Skill> srSkillList = new List<Skill>();
+        List<Skill> ssrSkillList = new List<Skill>();
+
         foreach (Skill elementSkill in GameLibrary.Instance.GetElementSkillList(element))
         {
             if (elementSkill.IsEnemyUnappliable()) continue;
 
-            skillList.Add(elementSkill);
+            switch (elementSkill.GetActionPointExpense())
+            {
+                case 1:
+                    rSkillList.Add(elementSkill);
+                    break;
+                case 2:
+                    srSkillList.Add(elementSkill);
+                    break;
+                case 3:
+                    ssrSkillList.Add(elementSkill);
+                    break;
+            }
         }
+
+        // 技能可重复
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
-            Skill randomSkill = skillList[UnityEngine.Random.Range(0, skillList.Count)];
-            skillList.Remove(randomSkill);
-            Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
-            equippedSkillList.Add(skill);
+            int levelCount = GameLibrary.Instance.GetLevelCount();
+            System.Random random = new System.Random();
+            float randomNum = (float)random.NextDouble();
+            // float rSkillProbability = rSkillBaseProbability - rSkillProbabilityDecreasePerLevel * levelCount;
+            float srSkillProbability = srSkillBaseProbability + srSkillProbabilityIncreasePerLevel * levelCount;
+            float ssrSkillProbability = ssrSkillBaseProbability + ssrSkillProbabilityIncreasePerLevel * levelCount;
+
+            // 当前技能还未开发完全，故加了额外判断，之后移除
+            if (randomNum < ssrSkillProbability && ssrSkillList.Count > 0)
+            {
+                // 抽一个3星技能
+                Skill randomSkill = ssrSkillList[UnityEngine.Random.Range(0, ssrSkillList.Count)];
+                Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+                equippedSkillList.Add(skill);
+            } else if (randomNum < ssrSkillProbability + srSkillProbability && srSkillList.Count > 0)
+            {
+                // 抽一个2星技能
+                Skill randomSkill = srSkillList[UnityEngine.Random.Range(0, srSkillList.Count)];
+                Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+                equippedSkillList.Add(skill);
+            } else
+            {
+                // 抽一个1星技能
+                Skill randomSkill = rSkillList[UnityEngine.Random.Range(0, rSkillList.Count)];
+                Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+                equippedSkillList.Add(skill);
+            }
         }
+
+        UpdateAttribute();
     }
 
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1, bool isRealDamage = false)

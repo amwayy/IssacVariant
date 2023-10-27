@@ -48,12 +48,14 @@ MonoBehaviour:
   isEnemyUnappliable: 0
   skillTypeList: 0000000001000000
   skillName: "\u78A7\u6D6A\u6ED4\u5929"
-  skillDescription: "\u672C\u56DE\u5408\u653B\u51FB\u529B\u3001\u9632\u5FA1\u529B\u5404\u589E\u52A020%"
+  skillDescription: "\u672C\u56DE\u5408\u653B\u51FB\u529B\u548C\u9632\u5FA1\u529B\u5404\u589E\u52A020%"
   actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1
   baseDamage: 100
   damageDelta: 5
+  defense: 100
+  health: 100
   atkUpPercentage: 0.2
   defUpPercentage: 0.2
   atkUpBuffPrefab: {fileID: 2463174454272902535, guid: 16c6a293ede91814eb95e287dc3a6175, type: 3}

@@ -49,7 +49,10 @@ MonoBehaviour:
   skillTypeList: 00000000
   skillName: "\u5149\u7EBF\u9501\u5B9A"
   skillDescription: "\u65E0\u89C6\u5BF9\u65B9\u62A4\u76FE\u6548\u679C"
-  thisActionPointExpense: 1
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
   baseDamage: 55
   damageDelta: 5
-  thisCastTime: 1
+  defense: 50
+  health: 50

@@ -305,6 +305,10 @@ MonoBehaviour:
   portalPosTransformList:
   - {fileID: 2556042267270712670}
   roomType: 0
+  leftLimit: -7.5
+  rightLimit: 7.5
+  upLimit: 2.45
+  downLimit: -4.3
 --- !u!1 &1738258054855166163
 GameObject:
   m_ObjectHideFlags: 0

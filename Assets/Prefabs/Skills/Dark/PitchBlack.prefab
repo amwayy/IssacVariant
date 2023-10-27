@@ -49,9 +49,14 @@ MonoBehaviour:
   skillTypeList: 01000000
   skillName: "\u6F06\u9ED1"
   skillDescription: "\u4E0B\u56DE\u5408\u653B\u51FB\u9020\u6210\u7684\u4F24\u5BB3\u63D0\u534720%"
-  thisActionPointExpense: 1
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
+  baseDamage: 0
+  damageDelta: 5
+  defense: 80
+  health: 50
   atkUpCountdownMax: 1
-  thisCastTime: 1
   setBuffTimerMax: 0.5
   atkUpBuffPrefab: {fileID: 2463174454272902535, guid: 16c6a293ede91814eb95e287dc3a6175, type: 3}
   atkUpPercentage: 0.2

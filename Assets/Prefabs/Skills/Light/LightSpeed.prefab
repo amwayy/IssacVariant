@@ -45,10 +45,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   element: 3
-  isEnemyUnappliable: 1
+  isEnemyUnappliable: 0
   skillTypeList: 01000000
   skillName: "\u5149\u901F"
   skillDescription: "\u4E0B\u56DE\u5408\u884C\u52A8\u70B9\u4E0A\u9650+1\uFF0C\u56DE\u5408\u7ED3\u675F\u6062\u590D"
-  thisActionPointExpense: 1
-  thisCastTime: 1
+  actionPointExpense: 1
+  coolingCountdownMax: 1
+  castTime: 1
+  baseDamage: 0
+  damageDelta: 5
+  defense: 75
+  health: 50
   actionPointModifyAmount: 1
+  enemyBaseDamage: 60

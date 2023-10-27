@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerStatUI : MonoBehaviour
 {
@@ -10,8 +11,13 @@ public class PlayerStatUI : MonoBehaviour
     [SerializeField] private Image hpBarImage;
     [SerializeField] private GameObject extraHPGameObject;
     [SerializeField] private Image extraHpBarImage;
+    [SerializeField] private TextMeshProUGUI potionCountText;
+    [SerializeField] private Button usePotionButton;
+    [SerializeField] private float potionHealPercentage = .15f;
 
     public static PlayerStatUI Instance { get; private set; }
+
+    private int potionCount;
 
     private void Awake()
     {
@@ -19,6 +25,8 @@ public class PlayerStatUI : MonoBehaviour
 
         actionPointContainerTransform.gameObject.SetActive(false);
         extraHPGameObject.SetActive(false);
+
+        usePotionButton.onClick.AddListener(UsePotion);
     }
 
     private void Start()
@@ -31,6 +39,23 @@ public class PlayerStatUI : MonoBehaviour
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
         Player.Instance.OnModifyActionPoint += Player_OnModifyActionPoint;
         Player.Instance.OnHPMaxModified += Player_OnHPMaxModified;
+    }
+
+    private void UsePotion()
+    {
+        if (potionCount == 0 || 
+            (BattleManager.Instance.IsInBattle() && TurnManager.Instance.GetTurnState() == TurnManager.Turn.Enemy)) return;
+
+        Player.Instance.Heal((int)(potionHealPercentage * Player.Instance.GetHPMaxAmount()));
+
+        potionCount--;
+        potionCountText.text = "* " + potionCount.ToString();
+    }
+
+    public void AddPotion(int addCount)
+    {
+        potionCount += addCount;
+        potionCountText.text = "* " + potionCount.ToString();
     }
 
     public void ShowExtraHP()

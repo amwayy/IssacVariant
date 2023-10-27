@@ -54,3 +54,5 @@ MonoBehaviour:
   castTime: 1
   baseDamage: 70
   damageDelta: 5
+  defense: 30
+  health: 50

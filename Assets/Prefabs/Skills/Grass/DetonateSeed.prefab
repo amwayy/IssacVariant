@@ -52,5 +52,8 @@ MonoBehaviour:
   actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1
-  seedBaseDamage: 40
+  baseDamage: 40
   damageDelta: 5
+  defense: 60
+  health: 100
+  seedBaseDamage: 40

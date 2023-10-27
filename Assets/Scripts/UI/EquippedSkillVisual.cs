@@ -8,6 +8,7 @@ public class EquippedSkillVisual : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI skillText;
     [SerializeField] private TextMeshProUGUI coolingCountdownText;
+    [SerializeField] private TextMeshProUGUI expenseText;
     [SerializeField] private GameObject coolingVisualGameObject;
     [SerializeField] private Image coolingBackgroundImage;
     [SerializeField] private float coolingCountdownSpeed = 5f;
@@ -89,16 +90,10 @@ public class EquippedSkillVisual : MonoBehaviour
         skill = Player.Instance.GetEquippedSkillList()[equippedSkillIndex];
         skillText.text = skill.GetSkillName();
         skillDescriptionText.text = skill.GetSkillDescription();
+        expenseText.text = skill.GetActionPointExpense().ToString();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
 
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
-        if (skill.GetElement() == GameLibrary.Element.Light)
-        {
-            skillText.color = Color.black;
-        } else
-        {
-            skillText.color = Color.white;
-        }
     }
 
     private void CastSkill()

@@ -52,8 +52,14 @@ MonoBehaviour:
   actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1
+  baseDamage: 0
+  damageDelta: 5
+  defense: 150
+  health: 100
   atkUpPercentage: 0.2
   defUpPercentage: 0.2
-  atkUpBuffPrefab: {fileID: 0}
-  defUpBuffPrefab: {fileID: 0}
+  atkUpBuffPrefab: {fileID: 2463174454272902535, guid: 16c6a293ede91814eb95e287dc3a6175, type: 3}
+  defUpBuffPrefab: {fileID: 2463174454272902535, guid: a7302a611d59b1f48a1712038b1560ec, type: 3}
   setBuffTimerMax: 0.5
+  atkUpCountdownMax: 2
+  defUpCountdownMax: 2

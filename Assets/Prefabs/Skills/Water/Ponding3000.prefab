@@ -54,6 +54,8 @@ MonoBehaviour:
   castTime: 1
   baseDamage: 170
   damageDelta: 5
+  defense: 120
+  health: 150
   atkDownCountdownMax: 1
   damageCountdownMax: 2
   imprisonCountdownMax: 1

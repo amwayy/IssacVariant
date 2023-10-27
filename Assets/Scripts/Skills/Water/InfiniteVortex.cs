@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class InfiniteVortex : Skill
 {
-    [SerializeField] private int baseDamage = 100;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int damageCountdownMax = 2;
     [SerializeField] private int imprisonCountdownMax = 1;
     [SerializeField] private float drownProbability = .5f;

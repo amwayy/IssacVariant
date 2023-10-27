@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class FireRing : Skill
 {
-    [SerializeField] private int baseDamage = 50;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int igniteCountdownMax = 2; //灼烧状态 持续2回合
-    [SerializeField] private int DoubleAttackCountdownMax = 1; //
-    [SerializeField] private float thisCastTime = 1f;
+    [SerializeField] private int doubleDamageCountdownMax = 1; //
     [SerializeField] private float igniteProbability = .25f;
     [SerializeField] private float setBuffTimerMax = .5f;   // 设定Debuff的缓冲时间
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间
-    [SerializeField] private Transform bleedDebuffPrefab;
-    [SerializeField] private Transform doubleAttackBuffPrefab;
+    [SerializeField] private Transform igniteDebuffPrefab;
+    [SerializeField] private Transform countDoubleDamageBuffPrefab;
 
     public override void CastSkill(ISkillCaster skillCaster)
     {
@@ -27,25 +24,19 @@ public class FireRing : Skill
         {
             SetIgniteDebuff();
         }
-        //伤害翻倍
-        if (skillCaster.IsPlayer())
-        {
-            TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
-        }
-        else
-        {
-            TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
-        }
+
+        SetCountDoubleDamageBuff();
     }
+
     //灼烧
     private void SetIgniteDebuff()
     {
         bool isInIgnite = false; //
-        BleedFire bleed = null;
+        Ignite ignite = null;
         Transform debuffContainerTransform = skillCaster.GetOpponent().GetDebuffContainerTransform();
         foreach (Transform debuffTransform in debuffContainerTransform)
         {
-            if (debuffTransform.TryGetComponent(out bleed))
+            if (debuffTransform.TryGetComponent(out ignite))
             {
                 isInIgnite = true;
                 break;
@@ -54,59 +45,36 @@ public class FireRing : Skill
 
         if (isInIgnite)
         {
-            bleed.IncreaseCountdown(igniteCountdownMax);
+            ignite.IncreaseCountdown(igniteCountdownMax);
         }
         else
         {
-            skillCaster.GetOpponent().SetDebuff(bleedDebuffPrefab, igniteCountdownMax, setDebuffTimerMax);
+            skillCaster.GetOpponent().SetDebuff(igniteDebuffPrefab, igniteCountdownMax, setDebuffTimerMax);
         }
     }
 
-    //双倍伤害
-    private void TurnManager_OnEnterEnemyTurn(object sender, System.EventArgs e)
+    private void SetCountDoubleDamageBuff()
     {
-        TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
-
-        SetDoubleAttackBuff();
-    }
-
-    private void TurnManager_OnEnterPlayerTurn(object sender, System.EventArgs e)
-    {
-        TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
-
-        SetDoubleAttackBuff();
-    }
-
-    private void SetDoubleAttackBuff()
-    {
-        bool isInDoubleAttack = false;
-        DoubleAttack doubleAttack = null;
+        bool isInDoubleDamage = false;
+        CountDoubleDamage doubleDamage = null;
         Transform buffContainerTransform = skillCaster.GetBuffContainerTransform();
-
-        if (buffContainerTransform == null) return;
 
         foreach (Transform buffTransform in buffContainerTransform)
         {
-            if (buffTransform.TryGetComponent(out doubleAttack))
+            if (buffTransform.TryGetComponent(out doubleDamage))
             {
-                isInDoubleAttack = true;
+                isInDoubleDamage = true;
                 break;
             }
         }
 
-        if (isInDoubleAttack)
+        if (isInDoubleDamage)
         {
-            doubleAttack.IncreaseCountdown(DoubleAttackCountdownMax);
+            doubleDamage.IncreaseCountdown(doubleDamageCountdownMax);
         }
         else
         {
-            skillCaster.SetBuff(doubleAttackBuffPrefab, DoubleAttackCountdownMax, setBuffTimerMax);
+            skillCaster.SetBuff(countDoubleDamageBuffPrefab, doubleDamageCountdownMax, setBuffTimerMax);
         }
-    }
-
-    private void OnDestroy()
-    {
-        TurnManager.Instance.OnEnterPlayerTurn -= TurnManager_OnEnterPlayerTurn;
-        TurnManager.Instance.OnEnterEnemyTurn -= TurnManager_OnEnterEnemyTurn;
     }
 }

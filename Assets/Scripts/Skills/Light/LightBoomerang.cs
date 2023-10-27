@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class LightBoomerang : Skill
 {
-    [SerializeField] private int baseDamage = 40;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int minAttackCount = 2;
     [SerializeField] private int maxAttackCount = 4;
     [SerializeField] private float attackSpeed = 20f;

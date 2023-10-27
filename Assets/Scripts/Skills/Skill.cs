@@ -12,6 +12,10 @@ public class Skill : MonoBehaviour
     [SerializeField] protected int actionPointExpense = 1;
     [SerializeField] protected int coolingCountdownMax = 1;   // 冷却回合数，暂全设为1（方便测试）
     [SerializeField] protected float castTime = 1f;   // 技能释放的动画时间（秒）
+    [SerializeField] protected int baseDamage;   // 攻击力
+    [SerializeField] protected int damageDelta = 5;   // 攻击伤害随机范围
+    [SerializeField] private int defense;   // 防御力
+    [SerializeField] private int health;   // 生命值
 
     protected ISkillCaster skillCaster;
 
@@ -20,6 +24,21 @@ public class Skill : MonoBehaviour
         Attack,
         Buff,
         Debuff,
+    }
+
+    public int GetAttack()
+    {
+        return baseDamage;
+    }
+
+    public int GetDefense()
+    {
+        return defense;
+    }
+
+    public int GetHealth()
+    {
+        return health;
     }
 
     public string GetSkillDescription()

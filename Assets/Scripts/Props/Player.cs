@@ -9,14 +9,14 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private float playerHeight;
     [SerializeField] private float playerWidth;
     [SerializeField] private int defaultActionPointMaxCount = 3;
-    [SerializeField] private int hpMaxAmount = 500;
     [SerializeField] private int defaultEquippedSkillCountMax = 4;
     [SerializeField] private int defaultBackupSkillCountMax = 6;
     [SerializeField] private Vector3 attackPosBias;
     [SerializeField] private Transform debuffContainerTransform;
     [SerializeField] private Transform buffContainerTransform;
-    [SerializeField] private int atk = 100;
-    [SerializeField] private int def = 100;
+    [SerializeField] private int baseAtk = 100;
+    [SerializeField] private int baseDef = 100;
+    [SerializeField] private int baseHpMax = 100;
     [SerializeField] private Transform equippedSkillsTransform;
     [SerializeField] private Transform backupSkillsTransform;
     [SerializeField] private Transform lootSkillsTransform;
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour, ISkillCaster
 
     private const float ENTER_BATTLE_SPEED = 15f;
     private const float DEFAULT_ATTACK_SPEED = 15f;
-    private const float EPISILON_DISTANCE = .05f;
+    private const float EPISILON_DISTANCE = .1f;
 
     private Rigidbody2D playerRigidbody;
     private Vector3 moveDir = Vector3.zero;
@@ -73,7 +73,7 @@ public class Player : MonoBehaviour, ISkillCaster
     private int lastAttackDamage;
     private int actionPointMaxCount;
     private int availableActionPointCount;
-    private int hpAmount;
+    private int hpAmount = -1;
     private int equippedSkillCountMax;
     private int backupSkillCountMax;
     private int attackModifyAmount;
@@ -93,6 +93,9 @@ public class Player : MonoBehaviour, ISkillCaster
     private int extraHp;
     private int extraHpMax;
     private Skill lastCastSkill;
+    private int hpMaxAmount;
+    private int atk;
+    private int def;
 
     private void Awake()
     {
@@ -102,7 +105,6 @@ public class Player : MonoBehaviour, ISkillCaster
 
         actionPointMaxCount = defaultActionPointMaxCount;
         availableActionPointCount = actionPointMaxCount;
-        hpAmount = hpMaxAmount;
         attackSpeed = DEFAULT_ATTACK_SPEED;
         equippedSkillCountMax = defaultEquippedSkillCountMax;
         backupSkillCountMax = defaultBackupSkillCountMax;
@@ -145,6 +147,43 @@ public class Player : MonoBehaviour, ISkillCaster
         HandleMovement();
     }
 
+    private void UpdateAttribute()
+    {
+        atk = baseAtk;
+        def = baseDef;
+        hpMaxAmount = baseHpMax;
+
+        foreach (Skill equippedSkill in equippedSkillList)
+        {
+            if (equippedSkill.GetElement() == element)
+            {
+                atk += equippedSkill.GetAttack();
+                def += equippedSkill.GetDefense();
+                hpMaxAmount += equippedSkill.GetHealth();
+            }
+        }
+
+        foreach (Skill backupSkill in backUpSkillList)
+        {
+            if (backupSkill.GetElement() == element)
+            {
+                atk += backupSkill.GetAttack();
+                def += backupSkill.GetDefense();
+                hpMaxAmount += backupSkill.GetHealth();
+            }
+        }
+
+        // 初始化
+        if (hpAmount < 0)
+        {
+            hpAmount = hpMaxAmount;
+        }
+        hpAmount = Math.Min(hpAmount, hpMaxAmount);
+
+        OnHPMaxModified?.Invoke(this, EventArgs.Empty);
+        Debug.Log("Atk: " + atk + "; Def: " + def + "; HP: " + hpMaxAmount);
+    }
+
     public Skill GetLastCastSkill()
     {
         return lastCastSkill;
@@ -164,6 +203,8 @@ public class Player : MonoBehaviour, ISkillCaster
     {
         attackDamageMin = (int)(attackDamageMin * (1 + modifyPercentage));
         attackDamageMax = (int)(attackDamageMax * (1 + modifyPercentage));
+
+        Debug.Log("Attack Damage Modified " + modifyPercentage);
     }
 
     public int GetExtraHp()
@@ -236,6 +277,8 @@ public class Player : MonoBehaviour, ISkillCaster
         if (index >= backUpSkillList.Count) return;
 
         backUpSkillList[index] = skill;
+
+        UpdateAttribute();
     }
 
     public List<Skill> GetLootSkillList()
@@ -334,6 +377,8 @@ public class Player : MonoBehaviour, ISkillCaster
         equippedSkillToExchange.transform.SetSiblingIndex(lootSkillIndex);
         lootSkillToExchange.transform.SetParent(equippedSkillsTransform);
         lootSkillToExchange.transform.SetSiblingIndex(equippedSkillIndex);
+
+        UpdateAttribute();
     }
 
     public void ExchangeBackupLootSkill(int backupSkillIndex, int lootSkillIndex)
@@ -357,6 +402,8 @@ public class Player : MonoBehaviour, ISkillCaster
             lootSkillToExchange.transform.SetParent(backupSkillsTransform);
             lootSkillToExchange.transform.SetSiblingIndex(backupSkillIndex);
         }
+
+        UpdateAttribute();
     }
 
     public void ExchangeEquippedBackupSkill(int equippedSkillIndex, int backupSkillIndex)
@@ -370,6 +417,8 @@ public class Player : MonoBehaviour, ISkillCaster
         equippedSkillToExchange.transform.SetSiblingIndex(backupSkillIndex);
         backupSkillToExchange.transform.SetParent(equippedSkillsTransform);
         backupSkillToExchange.transform.SetSiblingIndex(equippedSkillIndex);
+
+        UpdateAttribute();
     }
 
     public List<Skill> GetBackupSkillList()
@@ -576,13 +625,15 @@ public class Player : MonoBehaviour, ISkillCaster
 
         // 把所有技能中的前几个放到背包里
         List<Skill> allSkillList = GameLibrary.Instance.GetAllSkillList();
-        int backupSkillCount = Math.Min(allSkillList.Count - equippedSkillCountMax, backupSkillCountMax);
-        // int backupSkillCount = 6;
+        // int backupSkillCount = Math.Min(allSkillList.Count - equippedSkillCountMax, backupSkillCountMax);
+        int backupSkillCount = 1;
         for (int i = 0; i < backupSkillCount; i++)
         {
             Skill backupSkill = Instantiate(allSkillList[i], backupSkillsTransform);
             backUpSkillList.Add(backupSkill);
         }
+
+        UpdateAttribute();
     }
 
     public void EndTurn()

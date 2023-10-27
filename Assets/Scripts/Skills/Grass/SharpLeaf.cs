@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class SharpLeaf : Skill
 {
-    [SerializeField] private int baseDamage = 75;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private int bleedCountdownMax = 4;
     [SerializeField] private float bleedProbability = .2f;
     [SerializeField] private float setDebuffTimerMax = .5f;   // 设定Debuff的缓冲时间

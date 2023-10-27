@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoubleAttack : Buff
+public class CountDoubleDamage : Buff
 {
-    private float damageModifyPercentage = 2f;
+    [SerializeField] private float damageIncreasePercentage = 1f;
 
     protected override void Start()
     {
@@ -13,10 +14,21 @@ public class DoubleAttack : Buff
         buffOwner.OnAttackReady += BuffOwner_OnAttackReady;
     }
 
+    protected override void TurnManager_OnEnterEnemyTurn(object sender, EventArgs e)
+    {
+
+    }
+
+    protected override void TurnManager_OnEnterPlayerTurn(object sender, EventArgs e)
+    {
+
+    }
+
     private void BuffOwner_OnAttackReady(object sender, System.EventArgs e)
     {
-        //不需要==water因为每一个都伤害翻倍
-        buffOwner.ModifyAttackDamage(damageModifyPercentage - 1);
+        buffOwner.ModifyAttackDamage(damageIncreasePercentage);
+
+        DecreaseCountdown();
     }
 
     protected override void OnDestroy()

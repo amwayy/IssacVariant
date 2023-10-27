@@ -18,6 +18,7 @@ public class GameLibrary : MonoBehaviour
     [SerializeField] private Color lightColor;
     [SerializeField] private Color darkColor;
     [SerializeField] private Transform canvasTransform;
+    [SerializeField] private int potionSpawnCountMax = 3;
 
     public static GameLibrary Instance { get; private set; }
 
@@ -30,9 +31,31 @@ public class GameLibrary : MonoBehaviour
         Dark
     }
 
+    private int levelCount;
+
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
+        Player.Instance.OnQuitBattle += Player_OnQuitBattle;
+    }
+
+    public int GetPotionSpawnCountMax()
+    {
+        return potionSpawnCountMax;
+    }
+
+    private void Player_OnQuitBattle(object sender, System.EventArgs e)
+    {
+        levelCount++;
+    }
+
+    public int GetLevelCount()
+    {
+        return levelCount;
     }
 
     public Transform GetCanvasTransform()

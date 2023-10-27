@@ -9,6 +9,7 @@ public class LootSkillVisual : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 {
     [SerializeField] private TextMeshProUGUI skillText;
     [SerializeField] private TextMeshProUGUI skillDescriptionText;
+    [SerializeField] private TextMeshProUGUI expenseText;
 
     private Skill skill;
     private Vector3 originalPos;
@@ -36,15 +37,8 @@ public class LootSkillVisual : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         this.skill = skill;
         skillText.text = skill.GetSkillName();
         skillDescriptionText.text = skill.GetSkillDescription();
+        expenseText.text = skill.GetActionPointExpense().ToString();
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
-        if (skill.GetElement() == GameLibrary.Element.Light)
-        {
-            skillText.color = Color.black;
-        }
-        else
-        {
-            skillText.color = Color.white;
-        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)

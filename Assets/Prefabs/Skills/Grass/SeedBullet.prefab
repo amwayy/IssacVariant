@@ -54,6 +54,8 @@ MonoBehaviour:
   castTime: 1
   baseDamage: 30
   damageDelta: 5
+  defense: 50
+  health: 50
   minAttackCount: 2
   maxAttackCount: 4
   attackSpeed: 20

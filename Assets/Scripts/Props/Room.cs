@@ -10,6 +10,30 @@ public class Room : MonoBehaviour
     [SerializeField] private Transform chestPosTransform;
     [SerializeField] private List<Transform> portalPosTransformList;
     [SerializeField] private RoomManager.RoomType roomType;
+    [SerializeField] private float leftLimit;
+    [SerializeField] private float rightLimit;
+    [SerializeField] private float upLimit;
+    [SerializeField] private float downLimit;
+
+    public float GetLeftLimit()
+    {
+        return leftLimit;
+    }
+
+    public float GetRightLimit()
+    {
+        return rightLimit;
+    }
+
+    public float GetUpLimit()
+    {
+        return upLimit;
+    }
+
+    public float GetDownLimit()
+    {
+        return downLimit;
+    }
 
     public RoomManager.RoomType GetRoomType()
     {

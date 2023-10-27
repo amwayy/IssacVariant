@@ -38,7 +38,7 @@ public class SouthernSea : Skill
     private void SetDoubleDamageBuff()
     {
         bool isInDoubleDamage = false;
-        DoubleDamage doubleDamage = null;
+        TurnDoubleDamage doubleDamage = null;
         Transform buffContainerTransform = skillCaster.GetBuffContainerTransform();
 
         if (buffContainerTransform == null) return;

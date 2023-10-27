@@ -9,6 +9,7 @@ public class RoomManager : MonoBehaviour
     [SerializeField] private List<Room> initialRoomList;
     [SerializeField] private Transform chestPrefab;
     [SerializeField] private Transform portalPrefab;
+    [SerializeField] private Transform potionPrefab;
 
     public static RoomManager Instance { get; private set; }
 
@@ -38,9 +39,37 @@ public class RoomManager : MonoBehaviour
 
     private void Player_OnQuitBattle(object sender, EventArgs e)
     {
+        SpawnChest();
+        SpawnPortal();
+        SpawnPotions();
+    }
+
+    private void SpawnPotions()
+    {
+        int spawnCount = UnityEngine.Random.Range(0, GameLibrary.Instance.GetPotionSpawnCountMax() + 1);
+        for (int i = 0; i < spawnCount; i++)
+        {
+            Transform potionTransform = Instantiate(potionPrefab, transform);
+            float leftLimit = curRoom.GetLeftLimit();
+            float rightLimit = curRoom.GetRightLimit();
+            float upLimit = curRoom.GetUpLimit();
+            float downLimit = curRoom.GetDownLimit();
+
+            System.Random random = new System.Random();
+            float posX = (float)random.NextDouble() * (rightLimit - leftLimit) + leftLimit;
+            float posY = (float)random.NextDouble() * (upLimit - downLimit) + downLimit;
+            potionTransform.position = new Vector3(posX, posY, 0);
+        }
+    }
+
+    private void SpawnChest()
+    {
         Transform chestTransform = Instantiate(chestPrefab, transform);
         chestTransform.position = curRoom.GetChestPos();
+    }
 
+    private void SpawnPortal()
+    {
         foreach (Vector3 portalPos in curRoom.GetPortalPosList())
         {
             Transform portalTransform = Instantiate(portalPrefab, transform);

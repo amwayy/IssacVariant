@@ -52,6 +52,10 @@ MonoBehaviour:
   actionPointExpense: 2
   coolingCountdownMax: 1
   castTime: 1
+  baseDamage: 0
+  damageDelta: 5
+  defense: 100
+  health: 100
   waterShieldCountdownMax: 2
   setBuffTimerMax: 0.5
   waterShieldBuffPrefab: {fileID: 2463174454272902535, guid: f5a7b8fe51f147c478847f5881caf642, type: 3}

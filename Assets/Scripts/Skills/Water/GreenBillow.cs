@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GreenBillow : Skill
 {
-    [SerializeField] private int baseDamage = 100;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private float atkUpPercentage = .2f;
     [SerializeField] private float defUpPercentage = .2f;
     [SerializeField] private Transform atkUpBuffPrefab;

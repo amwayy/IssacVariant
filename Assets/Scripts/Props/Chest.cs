@@ -42,7 +42,7 @@ public class Chest : MonoBehaviour
         Instantiate(lootWindowPrefab, GameLibrary.Instance.GetCanvasTransform());
     }
 
-    private void UpdateLayer()
+     private void UpdateLayer()
     {
         if (Player.Instance.transform.position.y > transform.position.y)
         {

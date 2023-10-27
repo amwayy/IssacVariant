@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GhostClaw : Skill
 {
-    [SerializeField] private int baseDamage = 80;
-    [SerializeField] private int damageDelta = 5;
     [SerializeField] private float opponentHPThreshold = .7f;   // hp百分比超过这个阈值时造成倍数伤害
     [SerializeField] private float damageModifyScaler = 2f;
 
