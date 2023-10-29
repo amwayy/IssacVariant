@@ -60,21 +60,27 @@ MonoBehaviour:
   debuffContainerTransform: {fileID: 1371107697706351037}
   buffContainerTransform: {fileID: 5796856707065727169}
   attackPosBias: {x: 0.32, y: 0.22, z: 0}
-  baseAtk: 50
-  baseDef: 50
-  baseHpMax: 100
   element: 0
   statContainerTransform: {fileID: 2884806441860860010}
   tokenContainerTransform: {fileID: 5017992322807702225}
-  atkIncreasePerLevel: 20
-  defIncreasePerLevel: 20
-  hpMaxIncreasePerLevel: 50
-  rSkillBaseProbability: 0.95
+  baseAtk: 50
+  baseDef: 50
+  baseHpMax: 100
+  atkIncreasePerLevel: 10
+  defIncreasePerLevel: 10
+  hpMaxIncreasePerLevel: 25
   srSkillBaseProbability: 0.04
   ssrSkillBaseProbability: 0.01
-  rSkillProbabilityDecreasePerLevel: 0.04
   srSkillProbabilityIncreasePerLevel: 0.025
   ssrSkillProbabilityIncreasePerLevel: 0.015
+  eliteAtkIncreasePerLevel: 20
+  eliteDefIncreasePerLevel: 20
+  eliteHpMaxIncreasePerLevel: 50
+  eliteSrSkillBaseProbability: 0.08
+  eliteSsrSkillBaseProbability: 0.02
+  eliteSrSkillProbabilityIncreasePerLevel: 0.05
+  eliteSsrSkillProbabilityIncreasePerLevel: 0.03
+  enemyType: 0
 --- !u!61 &2151240641143420229
 BoxCollider2D:
   m_ObjectHideFlags: 0

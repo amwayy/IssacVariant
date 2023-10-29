@@ -13,7 +13,7 @@ public class ParasiteBomb : Skill
     {
         base.CastSkill(skillCaster);
 
-        Debuff debuff = Player.Instance.GetOpponent().SetDebuff(bombPrefab, bombCountdowmMax, setDebuffTimerMax);
+        Debuff debuff = skillCaster.GetOpponent().SetDebuff(bombPrefab, bombCountdowmMax, setDebuffTimerMax);
         debuff.GetComponent<Bomb>().SetDamage(bombBaseDamage);
     }
 }

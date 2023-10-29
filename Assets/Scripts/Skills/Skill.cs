@@ -19,6 +19,11 @@ public class Skill : MonoBehaviour
 
     protected ISkillCaster skillCaster;
 
+    private void Awake()
+    {
+        coolingCountdownMax = actionPointExpense;
+    }
+
     public enum SkillType
     {
         Attack,

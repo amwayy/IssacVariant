@@ -131,6 +131,7 @@ public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, I
         skillDescriptionText.text = skill.GetSkillDescription();
         expenseText.text = skill.GetActionPointExpense().ToString();
         coolingCountdownMax = skill.GetCoolingCountdownMax();
+        Debug.Log(skill.GetSkillName() + " Cooldown Max: " + coolingCountdownMax);
 
         transform.GetComponent<Image>().color = GameLibrary.Instance.GetElementColor(skill.GetElement());
     }
@@ -155,15 +156,18 @@ public class BackupSkillVisual : MonoBehaviour, IDragHandler, IEndDragHandler, I
                 && (!hasExchangedSkill || !BattleManager.Instance.IsInBattle()))
             {
                 // ½»»»¼¼ÄÜ
-                Player.Instance.ExchangeEquippedBackupSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
-                skillParentUI.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
-
                 int tempCoolingCountdown = coolingCountdown;
                 int tempCoolingCountdownMax = coolingCountdownMax;
                 coolingCountdown = equippedSkill.GetCoolingCountdown();
                 coolingCountdownMax = equippedSkill.GetCoolingCountdownMax();
+                Debug.Log("BackupSkillToExchange CountdownMax: " + coolingCountdownMax);
+
+                Player.Instance.ExchangeEquippedBackupSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
+                skillParentUI.ExchangeSkill(equippedSkill.transform.GetSiblingIndex(), backupSkillIndex);
                 UpdateCoolingCountdown();
+
                 equippedSkill.SetCoolingCountdown(tempCoolingCountdown, tempCoolingCountdownMax);
+                equippedSkill.UpdateCoolingCountdown();
 
                 if (BattleManager.Instance.IsInBattle())
                 {

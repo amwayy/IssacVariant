@@ -19,6 +19,10 @@ public class GameLibrary : MonoBehaviour
     [SerializeField] private Color darkColor;
     [SerializeField] private Transform canvasTransform;
     [SerializeField] private int potionSpawnCountMax = 3;
+    [SerializeField] private float advantageFactor = 1.5f;
+    [SerializeField] private float disadvantageFactor = .75f;
+    [SerializeField] private int midBossLevelIndex = 10;   // 从1开始
+    [SerializeField] private int finalBossLevelIndex = 20;
 
     public static GameLibrary Instance { get; private set; }
 
@@ -41,6 +45,78 @@ public class GameLibrary : MonoBehaviour
     private void Start()
     {
         Player.Instance.OnQuitBattle += Player_OnQuitBattle;
+    }
+
+    public int GetFinalBossLevelIndex()
+    {
+        return finalBossLevelIndex;
+    }
+
+    public int GetMidBossLevelIndex()
+    {
+        return midBossLevelIndex;
+    }
+
+    // 属性相克系数
+    public float GetElementFactor(Element attackElement, Element defenderElement)
+    {
+        float elementFactor = 1f;
+        if (attackElement == Element.Grass)
+        {
+            if (defenderElement == Element.Water)
+            {
+                return advantageFactor;
+            }
+            if (defenderElement == Element.Fire)
+            {
+                return disadvantageFactor;
+            }
+        }
+        if (attackElement == Element.Fire)
+        {
+            if (defenderElement == Element.Grass)
+            {
+                return advantageFactor;
+            }
+            if (defenderElement == Element.Water)
+            {
+                return disadvantageFactor;
+            }
+        }
+        if (attackElement == Element.Water)
+        {
+            if (defenderElement == Element.Fire)
+            {
+                return advantageFactor;
+            }
+            if (defenderElement == Element.Grass)
+            {
+                return disadvantageFactor;
+            }
+        }
+        if (attackElement == Element.Light)
+        {
+            if (defenderElement == Element.Dark)
+            {
+                return advantageFactor;
+            }
+            if (defenderElement == Element.Light)
+            {
+                return disadvantageFactor;
+            }
+        }
+        if (attackElement == Element.Dark)
+        {
+            if (defenderElement == Element.Light)
+            {
+                return advantageFactor;
+            }
+            if (defenderElement == Element.Dark)
+            {
+                return disadvantageFactor;
+            }
+        }
+        return elementFactor;
     }
 
     public int GetPotionSpawnCountMax()

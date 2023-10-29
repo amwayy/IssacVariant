@@ -13,7 +13,7 @@ public class PlayerStatUI : MonoBehaviour
     [SerializeField] private Image extraHpBarImage;
     [SerializeField] private TextMeshProUGUI potionCountText;
     [SerializeField] private Button usePotionButton;
-    [SerializeField] private float potionHealPercentage = .15f;
+    [SerializeField] private float potionBaseHealPercentage = .02f;
 
     public static PlayerStatUI Instance { get; private set; }
 
@@ -46,7 +46,7 @@ public class PlayerStatUI : MonoBehaviour
         if (potionCount == 0 || 
             (BattleManager.Instance.IsInBattle() && TurnManager.Instance.GetTurnState() == TurnManager.Turn.Enemy)) return;
 
-        Player.Instance.Heal((int)(potionHealPercentage * Player.Instance.GetHPMaxAmount()));
+        Player.Instance.Heal((int)(potionBaseHealPercentage * GameLibrary.Instance.GetLevelCount() * Player.Instance.GetHPMaxAmount()));
 
         potionCount--;
         potionCountText.text = "* " + potionCount.ToString();

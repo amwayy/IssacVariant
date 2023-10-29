@@ -8,7 +8,7 @@ public class TestInstantKill : Skill
     {
         base.CastSkill(skillCaster);
 
-        int damage = skillCaster.GetOpponent().GetHPMaxAmount();
+        int damage = skillCaster.GetOpponent().GetHPMaxAmount() * 100;
         skillCaster.SetAttack(damage, damage);
     }
 }

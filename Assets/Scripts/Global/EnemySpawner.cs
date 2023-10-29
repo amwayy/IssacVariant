@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private List<Enemy> enemyList;
-    [SerializeField] private float spawnPosXMax = 7.5f;
-    [SerializeField] private float spawnPosXMin = -7.5f;
-    [SerializeField] private float spawnPosYMax = 1.6f;
-    [SerializeField] private float spawnPosYMin = -4.8f;
+    [SerializeField] private List<Enemy> minionList;
+    [SerializeField] private List<Enemy> eliteList;
+    [SerializeField] private List<Enemy> midBossList;
     [SerializeField] private float distanceAwayFromPlayer = 2.4f;
+    [SerializeField] private float spawnEliteBaseProbability = .01f;
+    [SerializeField] private int spawnCountMin = 2;
+    [SerializeField] private int spawnCountMax = 4;
+
+    private float spawnPosXMax;
+    private float spawnPosXMin;
+    private float spawnPosYMax;
+    private float spawnPosYMin;
 
     private void Start()
     {
@@ -18,7 +24,13 @@ public class EnemySpawner : MonoBehaviour
 
     private void RoomManager_OnEnterNewRoom(object sender, System.EventArgs e)
     {
-        if (RoomManager.Instance.GetCurRoom().GetRoomType() == RoomManager.RoomType.Regular)
+        spawnPosXMin = RoomManager.Instance.GetCurRoom().GetLeftLimit();
+        spawnPosXMax = RoomManager.Instance.GetCurRoom().GetRightLimit();
+        spawnPosYMin = RoomManager.Instance.GetCurRoom().GetDownLimit();
+        spawnPosYMax = RoomManager.Instance.GetCurRoom().GetUpLimit();
+
+        if (RoomManager.Instance.GetCurRoom().GetRoomType() == RoomManager.RoomType.Regular 
+            || RoomManager.Instance.GetCurRoom().GetRoomType() == RoomManager.RoomType.Boss)
         {
             SpawnEnemies();
         }
@@ -26,21 +38,59 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemies()
     {
-        int spawnCount = Random.Range(2, 5);
+        int spawnCount = Random.Range(spawnCountMin, spawnCountMax + 1);
 
-        List<Enemy> spawnableEnemyList = new List<Enemy>();
+        float spawnEliteProbability = spawnEliteBaseProbability * GameLibrary.Instance.GetLevelCount();
+        List<Enemy> spawnableMinionList = new List<Enemy>(); 
+        List<Enemy> spawnableEliteList = new List<Enemy>();
+        List<Enemy> spawnableMidBossList = new List<Enemy>();
 
-        for (int i = 0; i < enemyList.Count; i++)
+        for (int i = 0; i < minionList.Count; i++)
         {
-            spawnableEnemyList.Add(enemyList[i]);
+            spawnableMinionList.Add(minionList[i]);
+        }
+        for (int i = 0; i < eliteList.Count; i++)
+        {
+            spawnableEliteList.Add(eliteList[i]);
+        }
+        for (int i = 0; i < midBossList.Count; i++)
+        {
+            spawnableMidBossList.Add(midBossList[i]);
         }
 
-        for (int i = 0; i < spawnCount; i++)
+        if (RoomManager.Instance.GetCurRoom().GetRoomType() == RoomManager.RoomType.Boss)
         {
-            Enemy randomEnemy = spawnableEnemyList[Random.Range(0, spawnableEnemyList.Count)];
-            spawnableEnemyList.Remove(randomEnemy);
-            Enemy enemy = Instantiate(randomEnemy, transform);
-            enemy.transform.position = GetRandomPosAwayFromPlayer();
+            if (GameLibrary.Instance.GetLevelCount() == GameLibrary.Instance.GetMidBossLevelIndex())
+            {
+                Enemy randomEnemy = spawnableMidBossList[Random.Range(0, spawnableMidBossList.Count)];
+                spawnableMidBossList.Remove(randomEnemy);
+                Enemy enemy = Instantiate(randomEnemy, transform);
+                enemy.transform.position = GetRandomPosAwayFromPlayer();
+            }
+        } else
+        {
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                System.Random random = new System.Random();
+                float randomNum = (float)(random.NextDouble());
+                if (randomNum < spawnEliteProbability)
+                {
+                    // spawn elite
+                    Enemy randomEnemy = spawnableEliteList[Random.Range(0, spawnableEliteList.Count)];
+                    spawnableEliteList.Remove(randomEnemy);
+                    Enemy enemy = Instantiate(randomEnemy, transform);
+                    enemy.transform.position = GetRandomPosAwayFromPlayer();
+                }
+                else
+                {
+                    // spawn minion
+                    Enemy randomEnemy = spawnableMinionList[Random.Range(0, spawnableMinionList.Count)];
+                    spawnableMinionList.Remove(randomEnemy);
+                    Enemy enemy = Instantiate(randomEnemy, transform);
+                    enemy.transform.position = GetRandomPosAwayFromPlayer();
+                }
+            }
         }
     }
 

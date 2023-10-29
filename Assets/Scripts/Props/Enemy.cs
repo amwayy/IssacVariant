@@ -15,21 +15,22 @@ public class Enemy : MonoBehaviour, ISkillCaster
     [SerializeField] private Transform debuffContainerTransform;
     [SerializeField] private Transform buffContainerTransform;
     [SerializeField] private Vector3 attackPosBias;
-    [SerializeField] private int baseAtk = 50;
-    [SerializeField] private int baseDef = 50;
-    [SerializeField] private int baseHpMax = 300;
     [SerializeField] GameLibrary.Element element;
     [SerializeField] private Transform statContainerTransform;
     [SerializeField] private Transform tokenContainerTransform;
+    [SerializeField] private int baseAtk = 50;
+    [SerializeField] private int baseDef = 50;
+    [SerializeField] private int baseHpMax = 300;
     [SerializeField] private int atkIncreasePerLevel = 20;
     [SerializeField] private int defIncreasePerLevel = 20;
     [SerializeField] private int hpMaxIncreasePerLevel = 50;
-    [SerializeField] private float rSkillBaseProbability = .95f;
     [SerializeField] private float srSkillBaseProbability = .04f;
     [SerializeField] private float ssrSkillBaseProbability = .01f;
-    [SerializeField] private float rSkillProbabilityDecreasePerLevel = .04f;
     [SerializeField] private float srSkillProbabilityIncreasePerLevel = .025f;
     [SerializeField] private float ssrSkillProbabilityIncreasePerLevel = .015f;
+    [SerializeField] private EnemyType enemyType;
+    [SerializeField] private int midBossSsrSkillCount = 2;   // 小boss3星技能数，其余为2星
+    [SerializeField] private int midBossLootActionPointCount = 1;
 
     public event EventHandler<int> OnTakeDamage;
     public event EventHandler OnHeal;
@@ -47,8 +48,16 @@ public class Enemy : MonoBehaviour, ISkillCaster
         Right
     }
 
+    private enum EnemyType
+    {
+        Minion,
+        Elite,
+        MidBoss,
+        FinalBoss
+    }
+
     private const float ENTER_BATTLE_SPEED = 15f;
-    private const float EPISILON_DISTANCE = .1f;
+    private const float EPSILON_DISTANCE_FACTOR = .0001f;
     private const float DEFAULT_ATTACK_SPEED = 10f;
 
     private Rigidbody2D enemyRigidbody;
@@ -80,6 +89,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private int atk = 100;
     private int def = 100;
     private int hpMaxAmount;
+    private float epsilonDistance;
 
     private void Awake()
     {
@@ -100,11 +110,10 @@ public class Enemy : MonoBehaviour, ISkillCaster
         Player.Instance.OnEnterBattle += Player_OnEnterBattle;
         TurnManager.Instance.OnEnterEnemyTurn += TurnManager_OnEnterEnemyTurn;
 
-        baseAtk += GameLibrary.Instance.GetLevelCount() * atkIncreasePerLevel;
-        baseDef += GameLibrary.Instance.GetLevelCount() * defIncreasePerLevel;
-        baseHpMax += GameLibrary.Instance.GetLevelCount() * hpMaxIncreasePerLevel;
-
+        InitializeAttribute();
         InitializeSkill();
+
+        epsilonDistance = Screen.width * EPSILON_DISTANCE_FACTOR;
     }
 
     private void Update()
@@ -123,6 +132,13 @@ public class Enemy : MonoBehaviour, ISkillCaster
     private void FixedUpdate()
     {
         HandleMovement();
+    }
+
+    private void InitializeAttribute()
+    {
+        baseAtk += GameLibrary.Instance.GetLevelCount() * atkIncreasePerLevel;
+        baseDef += GameLibrary.Instance.GetLevelCount() * defIncreasePerLevel;
+        baseHpMax += GameLibrary.Instance.GetLevelCount() * hpMaxIncreasePerLevel;
     }
 
     private void UpdateAttribute()
@@ -432,45 +448,76 @@ public class Enemy : MonoBehaviour, ISkillCaster
         }
 
         // 技能可重复
-        for (int i = 0; i < equippedSkillCountMax; i++)
+        if (enemyType == EnemyType.MidBoss)
         {
-            int levelCount = GameLibrary.Instance.GetLevelCount();
-            System.Random random = new System.Random();
-            float randomNum = (float)random.NextDouble();
-            // float rSkillProbability = rSkillBaseProbability - rSkillProbabilityDecreasePerLevel * levelCount;
-            float srSkillProbability = srSkillBaseProbability + srSkillProbabilityIncreasePerLevel * levelCount;
-            float ssrSkillProbability = ssrSkillBaseProbability + ssrSkillProbabilityIncreasePerLevel * levelCount;
-
-            // 当前技能还未开发完全，故加了额外判断，之后移除
-            if (randomNum < ssrSkillProbability && ssrSkillList.Count > 0)
+            for (int i = 0; i < midBossSsrSkillCount; i++)
             {
-                // 抽一个3星技能
+                // 技能补全后移除
+                if (ssrSkillList.Count == 0) continue;
+
                 Skill randomSkill = ssrSkillList[UnityEngine.Random.Range(0, ssrSkillList.Count)];
                 Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
                 equippedSkillList.Add(skill);
-            } else if (randomNum < ssrSkillProbability + srSkillProbability && srSkillList.Count > 0)
+            }
+            int lackingSkillCount = equippedSkillCountMax - equippedSkillList.Count;
+            for (int i = 0; i < lackingSkillCount; i++)
             {
-                // 抽一个2星技能
                 Skill randomSkill = srSkillList[UnityEngine.Random.Range(0, srSkillList.Count)];
                 Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
                 equippedSkillList.Add(skill);
-            } else
+            }
+        } else
+        {
+            for (int i = 0; i < equippedSkillCountMax; i++)
             {
-                // 抽一个1星技能
-                Skill randomSkill = rSkillList[UnityEngine.Random.Range(0, rSkillList.Count)];
-                Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
-                equippedSkillList.Add(skill);
+                int levelCount = GameLibrary.Instance.GetLevelCount();
+                System.Random random = new System.Random();
+                float randomNum = (float)random.NextDouble();
+                // float rSkillProbability = rSkillBaseProbability - rSkillProbabilityDecreasePerLevel * levelCount;
+
+                float srSkillProbability = srSkillBaseProbability + srSkillProbabilityIncreasePerLevel * levelCount;
+                float ssrSkillProbability = ssrSkillBaseProbability + ssrSkillProbabilityIncreasePerLevel * levelCount;
+
+                // 当前技能还未开发完全，故加了额外判断，之后移除
+                if (randomNum < ssrSkillProbability && ssrSkillList.Count > 0)
+                {
+                    // 抽一个3星技能
+                    Skill randomSkill = ssrSkillList[UnityEngine.Random.Range(0, ssrSkillList.Count)];
+                    Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+                    equippedSkillList.Add(skill);
+                }
+                else if (randomNum < ssrSkillProbability + srSkillProbability && srSkillList.Count > 0)
+                {
+                    // 抽一个2星技能
+                    Skill randomSkill = srSkillList[UnityEngine.Random.Range(0, srSkillList.Count)];
+                    Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+                    equippedSkillList.Add(skill);
+                }
+                else
+                {
+                    // 抽一个1星技能
+                    Skill randomSkill = rSkillList[UnityEngine.Random.Range(0, rSkillList.Count)];
+                    Skill skill = Instantiate(randomSkill, equippedSkillsTransform);
+                    equippedSkillList.Add(skill);
+                }
             }
         }
 
         UpdateAttribute();
     }
 
+    public GameLibrary.Element GetElement()
+    {
+        return element;
+    }
+
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1, bool isRealDamage = false)
     {
         isAttacking = true;
-        attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF());
-        attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF());
+        float elementFactor = GameLibrary.Instance.GetElementFactor(element, GetOpponent().GetElement());
+        Debug.Log("Enemy Attack Element Factor: " + elementFactor);
+        attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF() * elementFactor);
+        attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF() * elementFactor);
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
         this.isRealDamage = isRealDamage;
@@ -484,7 +531,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
         {
             transform.position = Vector3.Lerp(transform.position, playerBattlePosition, Time.deltaTime * attackSpeed);
 
-            if (Vector3.Distance(transform.position, playerBattlePosition) < EPISILON_DISTANCE)
+            if (Vector3.Distance(transform.position, playerBattlePosition) < epsilonDistance)
             {
                 isAttacking = false;
                 isEndingAttack = true;
@@ -503,7 +550,7 @@ public class Enemy : MonoBehaviour, ISkillCaster
         if (isEndingAttack)
         {
             transform.position = Vector3.Lerp(transform.position, battlePosition, Time.deltaTime * attackSpeed);
-            if (Vector3.Distance(transform.position, battlePosition) < EPISILON_DISTANCE)
+            if (Vector3.Distance(transform.position, battlePosition) < epsilonDistance)
             {
                 isEndingAttack = false;
 
@@ -588,6 +635,11 @@ public class Enemy : MonoBehaviour, ISkillCaster
 
     private void Die()
     {
+        if (enemyType == EnemyType.MidBoss)
+        {
+            Player.Instance.ModifyDefaultActionPointMaxCount(midBossLootActionPointCount);
+        }
+
         Player.Instance.QuitBattle();
         Player.Instance.SetLootSkillList(equippedSkillList);
 
@@ -633,6 +685,12 @@ public class Enemy : MonoBehaviour, ISkillCaster
         if (!BattleManager.Instance.IsInBattle()) return;
 
         if (isAttacking || isEndingAttack) return;
+
+        if (Vector3.Distance(transform.position, battlePosition) < epsilonDistance)
+        {
+            transform.position = battlePosition;
+            return;
+        }
 
         transform.position = Vector3.Lerp(transform.position, battlePosition, Time.deltaTime * ENTER_BATTLE_SPEED);
     }

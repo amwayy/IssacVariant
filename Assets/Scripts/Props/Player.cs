@@ -22,6 +22,8 @@ public class Player : MonoBehaviour, ISkillCaster
     [SerializeField] private Transform lootSkillsTransform;
     [SerializeField] private Transform statContainerTransform;
     [SerializeField] private Transform tokenContainerTransform;
+    [SerializeField] private float addDifferentElementAttributeFactor = .5f;
+    [SerializeField] private float addSameElementAttributeFactor = 1f;
 
     public static Player Instance { get; private set; }
 
@@ -50,7 +52,7 @@ public class Player : MonoBehaviour, ISkillCaster
 
     private const float ENTER_BATTLE_SPEED = 15f;
     private const float DEFAULT_ATTACK_SPEED = 15f;
-    private const float EPISILON_DISTANCE = .1f;
+    private const float EPSILON_DISTANCE_FACTOR = .0001f;
 
     private Rigidbody2D playerRigidbody;
     private Vector3 moveDir = Vector3.zero;
@@ -96,6 +98,7 @@ public class Player : MonoBehaviour, ISkillCaster
     private int hpMaxAmount;
     private int atk;
     private int def;
+    private float epsilonDistance;
 
     private void Awake()
     {
@@ -127,6 +130,8 @@ public class Player : MonoBehaviour, ISkillCaster
     {
         TurnManager.Instance.OnEnterPlayerTurn += TurnManager_OnEnterPlayerTurn;
         RoomManager.Instance.OnEnterNewRoom += RoomManager_OnEnterNewRoom;
+
+        epsilonDistance = Screen.width * EPSILON_DISTANCE_FACTOR;
     }
 
     private void Update()
@@ -153,24 +158,35 @@ public class Player : MonoBehaviour, ISkillCaster
         def = baseDef;
         hpMaxAmount = baseHpMax;
 
+        float addFactor = 1f;
+
         foreach (Skill equippedSkill in equippedSkillList)
         {
-            if (equippedSkill.GetElement() == element)
+            if (equippedSkill.GetElement() != element)
             {
-                atk += equippedSkill.GetAttack();
-                def += equippedSkill.GetDefense();
-                hpMaxAmount += equippedSkill.GetHealth();
+                addFactor = addDifferentElementAttributeFactor;
+            } else
+            {
+                addFactor = addSameElementAttributeFactor;
             }
+            atk += (int)(equippedSkill.GetAttack() * addFactor);
+            def += (int)(equippedSkill.GetDefense() * addFactor);
+            hpMaxAmount += (int)(equippedSkill.GetHealth() * addFactor);
         }
 
         foreach (Skill backupSkill in backUpSkillList)
         {
-            if (backupSkill.GetElement() == element)
+            if (backupSkill.GetElement() != element)
             {
-                atk += backupSkill.GetAttack();
-                def += backupSkill.GetDefense();
-                hpMaxAmount += backupSkill.GetHealth();
+                addFactor = addDifferentElementAttributeFactor;
             }
+            else
+            {
+                addFactor = addSameElementAttributeFactor;
+            }
+            atk += (int)(backupSkill.GetAttack() * addFactor);
+            def += (int)(backupSkill.GetDefense() * addFactor);
+            hpMaxAmount += (int)(backupSkill.GetHealth() * addFactor);
         }
 
         // 初始化
@@ -261,12 +277,6 @@ public class Player : MonoBehaviour, ISkillCaster
 
     public void EndLoot()
     {
-        foreach (Skill skill in lootSkillList)
-        {
-            skill.transform.SetParent(null);
-            Destroy(skill.gameObject);
-        }
-
         lootSkillList.Clear();
 
         OnEndLoot?.Invoke(this, EventArgs.Empty);
@@ -323,6 +333,23 @@ public class Player : MonoBehaviour, ISkillCaster
         Debug.Log("Original Damage: " + damageTaken + "; Modified Damage: " + (int)(damageTaken * (1 + modifyPercentage)));
 
         damageTaken = (int)(damageTaken * (1 + modifyPercentage));
+    }
+
+    public void ModifyDefaultActionPointMaxCount(int modifyAmount)
+    {
+        defaultActionPointMaxCount += modifyAmount;
+        actionPointMaxCount = defaultActionPointMaxCount;
+
+        if (modifyAmount > 0)
+        {
+            availableActionPointCount += modifyAmount;
+        }
+        if (modifyAmount < 0)
+        {
+            availableActionPointCount = Math.Min(availableActionPointCount, actionPointMaxCount);
+        }
+
+        OnModifyActionPoint?.Invoke(this, modifyAmount);
     }
 
     public void ModifyActionPointMax(int modifyAmount)
@@ -413,6 +440,8 @@ public class Player : MonoBehaviour, ISkillCaster
         equippedSkillList[equippedSkillIndex] = backupSkillToExchange;
         backUpSkillList[backupSkillIndex] = equippedSkillToExchange;
 
+        //Transform equippedSkillToExchangeTransform = equippedSkillsTransform.GetChild(equippedSkillIndex);
+        //Transform backupSkillToExchangeTransform = backupSkillsTransform.GetChild(backupSkillIndex);
         equippedSkillToExchange.transform.SetParent(backupSkillsTransform);
         equippedSkillToExchange.transform.SetSiblingIndex(backupSkillIndex);
         backupSkillToExchange.transform.SetParent(equippedSkillsTransform);
@@ -595,9 +624,6 @@ public class Player : MonoBehaviour, ISkillCaster
 
     private void InitializeSkill()
     {
-        // 初期开发设定
-
-        // player携带全部技能列表的后4个（方便测试最新技能）
         List<Skill> skillList = new List<Skill>();
         switch(element)
         {
@@ -617,15 +643,19 @@ public class Player : MonoBehaviour, ISkillCaster
                 skillList = GameLibrary.Instance.GetElementSkillList(GameLibrary.Element.Dark);
                 break;
         }
+
         for (int i = 0; i < equippedSkillCountMax; i++)
         {
-            Skill equippedSkill = Instantiate(skillList[skillList.Count - 1 - i], equippedSkillsTransform);
+            // for test: player携带全部技能列表的后4个
+            //Skill equippedSkill = Instantiate(skillList[skillList.Count - 1 - i], equippedSkillsTransform);
+            //equippedSkillList.Add(equippedSkill);
+
+            Skill equippedSkill = Instantiate(skillList[0], equippedSkillsTransform);
             equippedSkillList.Add(equippedSkill);
         }
 
-        // 把所有技能中的前几个放到背包里
+        // for test: 设定背包技能
         List<Skill> allSkillList = GameLibrary.Instance.GetAllSkillList();
-        // int backupSkillCount = Math.Min(allSkillList.Count - equippedSkillCountMax, backupSkillCountMax);
         int backupSkillCount = 1;
         for (int i = 0; i < backupSkillCount; i++)
         {
@@ -765,16 +795,18 @@ public class Player : MonoBehaviour, ISkillCaster
         return isCastingSkill;
     }
 
-    public Enemy GetBattlingEnemy()
+    public GameLibrary.Element GetElement()
     {
-        return battlingEnemy;
+        return element;
     }
 
     public void SetAttack(int damageMin, int damageMax, float playerAttackSpeed = DEFAULT_ATTACK_SPEED, int attackCount = 1, bool isRealDamage = false)
     {
         isAttacking = true;
-        attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF());
-        attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF());
+        float elementFactor = GameLibrary.Instance.GetElementFactor(element, GetOpponent().GetElement());
+        Debug.Log("Player Attack Element Factor: " + elementFactor);
+        attackDamageMin = (int)((float)damageMin * atk / GetOpponent().GetDEF() * elementFactor);
+        attackDamageMax = (int)((float)damageMax * atk / GetOpponent().GetDEF() * elementFactor);
         attackSpeed = playerAttackSpeed;
         this.attackCount = attackCount;
         attackModifyAmount = 0;
@@ -799,7 +831,7 @@ public class Player : MonoBehaviour, ISkillCaster
         {
             transform.position = Vector3.Lerp(transform.position, enemyBattlePosition, Time.deltaTime * attackSpeed);
 
-            if (Vector3.Distance(transform.position, enemyBattlePosition) < EPISILON_DISTANCE)
+            if (Vector3.Distance(transform.position, enemyBattlePosition) < epsilonDistance)
             {
                 isAttacking = false;
                 isEndingAttack = true;
@@ -813,7 +845,7 @@ public class Player : MonoBehaviour, ISkillCaster
         if (isEndingAttack)
         {
             transform.position = Vector3.Lerp(transform.position, battlePosition, Time.deltaTime * attackSpeed);
-            if (Vector3.Distance(transform.position, battlePosition) < EPISILON_DISTANCE)
+            if (Vector3.Distance(transform.position, battlePosition) < epsilonDistance)
             {
                 isEndingAttack = false;
 
@@ -835,6 +867,12 @@ public class Player : MonoBehaviour, ISkillCaster
     private void TryMoveToBattlePosition()
     {
         if (!BattleManager.Instance.IsInBattle()) return;
+
+        if (Vector3.Distance(transform.position, battlePosition) < epsilonDistance)
+        {
+            transform.position = battlePosition;
+            return;
+        }
 
         if (isAttacking || isEndingAttack) return;
 

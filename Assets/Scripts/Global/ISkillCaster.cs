@@ -19,6 +19,8 @@ public interface ISkillCaster
         public bool isRealDamage;
     }
 
+    public GameLibrary.Element GetElement();
+
     public Skill GetLastCastSkill();
 
     public int GetDamageTaken();

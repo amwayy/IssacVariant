@@ -7,6 +7,7 @@ public class RoomManager : MonoBehaviour
 {
     [SerializeField] private List<Room> regularRoomList;
     [SerializeField] private List<Room> initialRoomList;
+    [SerializeField] private List<Room> bossRoomList;
     [SerializeField] private Transform chestPrefab;
     [SerializeField] private Transform portalPrefab;
     [SerializeField] private Transform potionPrefab;
@@ -19,7 +20,6 @@ public class RoomManager : MonoBehaviour
     {
         Regular,
         Initial,
-        Shop,
         Boss,
     }
 
@@ -74,6 +74,16 @@ public class RoomManager : MonoBehaviour
         {
             Transform portalTransform = Instantiate(portalPrefab, transform);
             portalTransform.position = portalPos;
+
+            RoomPortal roomPortal = portalTransform.GetComponent<RoomPortal>();
+            if (GameLibrary.Instance.GetLevelCount() == GameLibrary.Instance.GetMidBossLevelIndex()
+                || GameLibrary.Instance.GetLevelCount() == GameLibrary.Instance.GetFinalBossLevelIndex())
+            {
+                roomPortal.SetPortalRoomType(RoomType.Boss);
+            } else
+            {
+                roomPortal.SetPortalRoomType(RoomType.Regular);
+            }
         }
     }
 
@@ -102,6 +112,9 @@ public class RoomManager : MonoBehaviour
                 break;
             case RoomType.Initial:
                 randomRoom = initialRoomList[UnityEngine.Random.Range(0, initialRoomList.Count)];
+                break;
+            case RoomType.Boss:
+                randomRoom = bossRoomList[UnityEngine.Random.Range(0, bossRoomList.Count)];
                 break;
         }
         Instantiate(randomRoom, transform);

@@ -55,6 +55,8 @@ public class EquippedSkillVisual : MonoBehaviour
         coolingCountdown = countdown;
         coolingCountdownMax = countdownMax;
         UpdateCoolingCountdown();
+
+        Debug.Log("EquippedSkillExchanged CountdownMax: " + coolingCountdownMax);
     }
 
     public int GetCoolingCountdown()
@@ -111,7 +113,7 @@ public class EquippedSkillVisual : MonoBehaviour
         UpdateCoolingCountdown();
     }
 
-    private void UpdateCoolingCountdown()
+    public void UpdateCoolingCountdown()
     {
         Player.Instance.SetEquippedSkillCoolingCountdown(index, coolingCountdown);
 

@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class RoomPortal : MonoBehaviour
 {
-    [SerializeField] private RoomManager.RoomType roomType;
+    private RoomManager.RoomType roomType;
+
+    public void SetPortalRoomType(RoomManager.RoomType roomType)
+    {
+        this.roomType = roomType;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
