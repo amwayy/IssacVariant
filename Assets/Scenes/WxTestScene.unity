@@ -358,14 +358,21 @@ MonoBehaviour:
   playerHeight: 1.32
   playerWidth: 0.58
   defaultActionPointMaxCount: 3
-  hpMaxAmount: 500
   defaultEquippedSkillCountMax: 4
   defaultBackupSkillCountMax: 6
   attackPosBias: {x: -0.32, y: -0.22, z: 0}
   debuffContainerTransform: {fileID: 1452940627}
   buffContainerTransform: {fileID: 1341747757}
-  atk: 100
-  def: 100
+  baseAtk: 100
+  baseDef: 100
+  baseHpMax: 100
+  equippedSkillsTransform: {fileID: 0}
+  backupSkillsTransform: {fileID: 0}
+  lootSkillsTransform: {fileID: 0}
+  statContainerTransform: {fileID: 0}
+  tokenContainerTransform: {fileID: 0}
+  addDifferentElementAttributeFactor: 0.5
+  addSameElementAttributeFactor: 1
 --- !u!4 &321458003
 Transform:
   m_ObjectHideFlags: 0
@@ -660,6 +667,72 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &586219600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 586219602}
+  - component: {fileID: 586219601}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &586219601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586219600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6a29568a576d14c99408aa4dc82404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionList:
+  - {fileID: 1644843193909885012, guid: 2b9657db07609c74c835ad88cdd96821, type: 3}
+  - {fileID: 1644843193909885012, guid: 2c218f3c9bfc0f34e8bcb9363e275d2c, type: 3}
+  - {fileID: 1644843193909885012, guid: ef5774ce0849f83469c8a1c438dd5a76, type: 3}
+  - {fileID: 1644843193909885012, guid: 615255200329c5a4d972ea748d7051b2, type: 3}
+  - {fileID: 1644843193909885012, guid: 6833296960bb2524192de1b61e11153e, type: 3}
+  eliteList:
+  - {fileID: 8426020002126595258, guid: a42d38c20bd73f142a375d39cd3f1a98, type: 3}
+  - {fileID: 8426020002126595258, guid: 9c72f700b642a114a8de42d4c8d81d36, type: 3}
+  - {fileID: 8426020002126595258, guid: 99612e5dccd6fbc40abc3bc293b5146d, type: 3}
+  - {fileID: 8426020002126595258, guid: cd161b10997831c4c9f7dbb5013fed05, type: 3}
+  - {fileID: 8426020002126595258, guid: bf7826bb5f0062243b265eafed257979, type: 3}
+  midBossList:
+  - {fileID: 739764682284624755, guid: 56ff6bfb791253c4c8eac8903c58ab1b, type: 3}
+  - {fileID: 8594582080839450402, guid: 34195a9dda26f6047a40117a8a4e6597, type: 3}
+  - {fileID: 8594582080839450402, guid: 15bea0e05c64b1b4680c432a9958d979, type: 3}
+  - {fileID: 739764682284624755, guid: 0ef515182d9b31c468814a5b8986fbe7, type: 3}
+  - {fileID: 739764682284624755, guid: d18bad71329c7474cbc181b65ae41fb6, type: 3}
+  distanceAwayFromPlayer: 2.4
+  spawnEliteBaseProbability: 0.015
+  spawnCountMin: 2
+  spawnCountMax: 4
+--- !u!4 &586219602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586219600}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &626876973 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5628018141983903104, guid: ef67ba864d1ecc042b5f4cf48455c0a6, type: 3}
@@ -909,6 +982,12 @@ MonoBehaviour:
   waterColor: {r: 0.09411766, g: 0.36862746, b: 0.43921572, a: 1}
   lightColor: {r: 0.6415094, g: 0.60761833, b: 0.1476682, a: 1}
   darkColor: {r: 0.4392157, g: 0.09411763, b: 0.4138315, a: 1}
+  canvasTransform: {fileID: 0}
+  potionSpawnCountMax: 3
+  advantageFactor: 1.5
+  disadvantageFactor: 0.75
+  midBossLevelIndex: 10
+  finalBossLevelIndex: 20
 --- !u!1 &760865873
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,6 +1250,11 @@ MonoBehaviour:
   actionPointContainerTransform: {fileID: 505936445}
   actionPointPrefab: {fileID: 5361305047381545858, guid: b4ab5aebc2ff2294aad5e64b838f2589, type: 3}
   hpBarImage: {fileID: 1072239881}
+  extraHPGameObject: {fileID: 0}
+  extraHpBarImage: {fileID: 0}
+  potionCountText: {fileID: 0}
+  usePotionButton: {fileID: 0}
+  potionBaseHealPercentage: 0.02
 --- !u!1 &893748043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,6 +1598,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   regularRoomList:
   - {fileID: 6213514005478985951, guid: cbbf9d657d58e004da5b1c919adfa1a7, type: 3}
+  initialRoomList: []
+  bossRoomList: []
+  chestPrefab: {fileID: 0}
+  portalPrefab: {fileID: 0}
+  potionPrefab: {fileID: 0}
 --- !u!4 &1056804095
 Transform:
   m_ObjectHideFlags: 0
@@ -2092,61 +2181,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1509899619}
   m_CullTransparentMesh: 1
---- !u!1 &1519705882
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1519705883}
-  - component: {fileID: 1519705884}
-  m_Layer: 0
-  m_Name: EnemySpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1519705883
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1519705882}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1519705884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1519705882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd6a29568a576d14c99408aa4dc82404, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyList:
-  - {fileID: 8529936047952932437, guid: 24e4a3a004c4b1b4a8174276cba9bbe4, type: 3}
-  - {fileID: 8715037843084045481, guid: d34516e3283bf25429805d8fb233c87e, type: 3}
-  - {fileID: 8855940771053508222, guid: b789d157898d025489167c7a976f5057, type: 3}
-  - {fileID: 8901384080860984150, guid: 998b4a7fb27f65141a7291423f633b47, type: 3}
-  - {fileID: 4706664184402661013, guid: 818b6a93906e24b4eafa945e4d7262e2, type: 3}
-  spawnPosXMax: 7.5
-  spawnPosXMin: -7.5
-  spawnPosYMax: 1.6
-  spawnPosYMin: -4.8
-  distanceAwayFromPlayer: 2.4
 --- !u!1001 &1671378371
 PrefabInstance:
   m_ObjectHideFlags: 0

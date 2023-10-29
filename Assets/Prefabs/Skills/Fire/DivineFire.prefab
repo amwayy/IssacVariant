@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &9164202994172025593
+--- !u!1 &1890486359110900325
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3930392331736949166}
-  - component: {fileID: -2897168258681520725}
+  - component: {fileID: 8802115781196531698}
+  - component: {fileID: 8578979096382650568}
   m_Layer: 0
-  m_Name: HallucationalClaw
+  m_Name: DivineFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3930392331736949166
+--- !u!4 &8802115781196531698
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9164202994172025593}
+  m_GameObject: {fileID: 1890486359110900325}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,31 +32,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-2897168258681520725
+--- !u!114 &8578979096382650568
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9164202994172025593}
+  m_GameObject: {fileID: 1890486359110900325}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 104d9711a96d1de4c818921d1c227628, type: 3}
+  m_Script: {fileID: 11500000, guid: 2573dc68a21abf147b0aa610a6e8be49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  element: 4
+  element: 1
   isEnemyUnappliable: 0
   skillTypeList: 00000000
-  skillName: "\u5E7B\u5F71\u5229\u722A"
-  skillDescription: "\u9020\u6210\u4F24\u5BB3\u7684\u540C\u65F6\u9644\u52A030\u7684\u56FA\u5B9A\u4F24\u5BB3\uFF0C100%\u4F7F\u654C\u4EBA\u9677\u5165\u6D41\u8840\u72B6\u6001"
-  actionPointExpense: 2
+  skillName: "\u5929\u7167\u795E\u708E"
+  skillDescription: "50%\u4F7F\u654C\u65B9\u8FDB\u5165\u707C\u70E7\u72B6\u6001\uFF0C\u82E5\u4ED6\u5DF2\u7ECF\u5728\u707C\u70E7\u72B6\u6001\uFF0C\u90A3\u4E48\u707C\u70E7\u72B6\u6001\u56DE\u5408+1\u4E14\u589E\u52A020%\u4F24\u5BB3"
+  actionPointExpense: 3
   coolingCountdownMax: 1
   castTime: 1
-  baseDamage: 120
+  baseDamage: 190
   damageDelta: 5
-  attackModifyAmount: 30
-  attackSpeed: 120
-  bleedCountdownMax: 4
-  bleedProbability: 1
+  defense: 140
+  health: 150
+  igniteCountdownMax: 2
+  twentyDamageCountdownMax: 1
+  igniteProbability: 0.5
+  setBuffTimerMax: 0.5
   setDebuffTimerMax: 0.5
-  bleedDebuffPrefab: {fileID: 0}
+  igniteDebuffPrefab: {fileID: 2463174454272902535, guid: 8d3f4cbbcbcd545449614ccaa9508e8f, type: 3}
+  countTwentyDamageBuffPrefab: {fileID: 2463174454272902535, guid: ec614709e8979b6448fecae1a0580bad, type: 3}

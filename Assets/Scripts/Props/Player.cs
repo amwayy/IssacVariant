@@ -116,7 +116,7 @@ public class Player : MonoBehaviour, ISkillCaster
         debuffContainerTransform.gameObject.SetActive(false);
         tokenContainerTransform.gameObject.SetActive(false);
 
-        for (int i = 0; i < equippedSkillCountMax; i++)
+        for (int i = 0; i < equippedSkillCountMax;  i++)
         {
             equippedSkillCoolingCountdownList.Add(0);
         }

@@ -201,7 +201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8bf24191d57901547be6e55efce6de60, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b4816ef0f17ed6f44ad1e259defc8bda, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 2463174454272902535}
   - component: {fileID: 3932183472857967224}
   m_Layer: 0
-  m_Name: CountDoubleDamage
+  m_Name: CountTwentyDamage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,3 +265,4 @@ MonoBehaviour:
   countdownText: {fileID: 3949567452545936248}
   iconGameObject: {fileID: 1016059075708703969}
   buffMakeEffectTimerMax: 0.5
+  damageIncreasePercentage: 1
